@@ -3,6 +3,7 @@ import st7789py as st7789
 import time
 import framebuf
 from fonts import font
+import random
 
 spi = SPI(
     1,
@@ -98,14 +99,20 @@ tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
 DEFAULT_EYE_W = 60
 DEFAULT_EYE_H = 90
 
-x1=50
-x2=140
+
+DEFAULT_LEFT_EYE_X = 50
+DEFAULT_RIGHT_EYE_X = 140
+
+DEFAULT_EYE_Y = 120 - DEFAULT_EYE_H//2
+
+LOOK_MOVEMENT_RANGE = 10
+LOOK_MOVEMENT_STEP = 2
 
 class Eye:
   w = DEFAULT_EYE_W
   h = DEFAULT_EYE_H
-  x = 5
-  y = 120 - DEFAULT_EYE_H//2
+  x = 0
+  y = DEFAULT_EYE_Y
 
 LEFT_EYE = Eye()
 RIGHT_EYE = Eye()
@@ -142,42 +149,68 @@ def render_eyes(
     draw_eye(fb, x1, y1, width1, height1, 10, WHITE)
 
     # right eye
-    LEFT_EYE.x = x2
-    LEFT_EYE.y = y2
-    LEFT_EYE.w = width2
-    LEFT_EYE.h = height2
+    RIGHT_EYE.x = x2
+    RIGHT_EYE.y = y2
+    RIGHT_EYE.w = width2
+    RIGHT_EYE.h = height2
     draw_eye(fb, x2, y2, width2, height2, 10, WHITE)
 
 
     tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
 
+def sign(value):
+    return (value > 0) - (value < 0)
+
+def center_back():
+    diff_y = DEFAULT_EYE_Y - LEFT_EYE.y
+    diff_x = DEFAULT_LEFT_EYE_X - LEFT_EYE.x
+    dy = sign(diff_y)
+    dx = sign(diff_x)
+    look(dx, dy)
+
+DIRECTIONS = {
+    "left": (-1, 0),
+    "right": (1, 0),
+    "top": (0, -1),
+    "bottom": (0, 1),
+    "top_left": (-1, -1),
+    "top_right": (1, -1),
+    "bottom_left": (-1, 1),
+    "bottom_right": (1, 1),
+}
+
+def look(dx, dy):
+    x = 0
+    y = 0
+
+    # move eyes back to start position 
+    # move eyes to desired position
+    while abs(x) <= LOOK_MOVEMENT_RANGE and abs(y) <= LOOK_MOVEMENT_RANGE:
+        render_eyes(
+            y1=LEFT_EYE.y + y,
+            x1=LEFT_EYE.x + x,
+            y2=RIGHT_EYE.y + y,
+            x2=RIGHT_EYE.x + x
+        )
+
+        x += dx * LOOK_MOVEMENT_STEP
+        y += dy * LOOK_MOVEMENT_STEP
+
+        time.sleep(0.001)
+
 def look_around():
-    starter_x1 = 50
-    starter_x2 = 140
-    render_eyes(x1 = starter_x1, x2 = starter_x2)
-    time.sleep(0.05)
-    for x in range(2, 10, 2):
-        starter_x1 -= x
-        starter_x2 -= x
-        render_eyes(x1=starter_x1, x2=starter_x2)
-        time.sleep(0.0001)
 
-    time.sleep(0.5)
-    for x in range(2, 13, 2):
-        starter_x1 += x
-        starter_x2 += x
-        render_eyes(x1=starter_x1, x2=starter_x2)
-        time.sleep(0.0005)
+    dx1, dy1 = DIRECTIONS["left"]
+    look(dx1, dy1)
+    time.sleep(1)
 
-    time.sleep(0.5)
-    # FIX ME I HAVE BED PIXEL POSITION
-    for x in range(2, 9, 1):
-        starter_x1 -= x
-        starter_x2 -= x
-        render_eyes(x1=starter_x1, x2=starter_x2)
-        time.sleep(0.0005)
+    center_back()
+    dx2, dy2 = DIRECTIONS["right"]
+    look(dx2, dy2)
+    time.sleep(1)
 
-    time.sleep(0.5)
+    center_back()
+    time.sleep(1)
 
 def squeeze_eyes():
     for h in range(DEFAULT_EYE_H, 30, -5):
@@ -193,22 +226,18 @@ def susface():
         render_eyes(height1=h)
         time.sleep(0.0001)
 
-def blink():
-    for h in range(90, 5, -16):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-    for h in range(5, 90, 16):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
+def blink(reps=1):
+    count = 0
+    while count <= reps:
+        for h in range(90, 5, -16):
+            render_eyes(height1=h, height2=h)
+            time.sleep(0.0001)
+        for h in range(5, 90, 16):
+            render_eyes(height1=h, height2=h)
+            time.sleep(0.0001)
+        count += 1
 
     time.sleep(0.05)
-    for h in range(90, 5, -16):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-
-    for h in range(5, 90, 16):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
 
 def booting_eyes():
     render_eyes(height1=5, height2=5)
@@ -242,7 +271,7 @@ def booting_eyes():
         time.sleep(0.001)
 
     time.sleep(1)
-    blink()
+    blink(2)
     look_around()
     squeeze_eyes()
     susface()
@@ -261,26 +290,54 @@ def handle_button_press():
     #         time.sleep(1)
     #         render_text_line_center("Button not", WHITE)
 
-render_eyes()
+
+def test_clip():
+        for h in range(90, 5, -16):
+            render_eyes(height1=h, height2=h, y1=LEFT_EYE.y, y2=RIGHT_EYE.y)
+            time.sleep(0.0001)
+        for h in range(5, 90, 16):
+            render_eyes(height1=h, height2=h, y1=LEFT_EYE.y, y2=RIGHT_EYE.y)
+            time.sleep(0.0001)
+
 def levitate():
     while True:
-        for y in range(LEFT_EYE.y, LEFT_EYE.y+10, 1):
+        for y in range(LEFT_EYE.y, LEFT_EYE.y+15, 1):
             render_eyes(y1=y, y2=y)
-            time.sleep(0.01)
+            time.sleep(0.05)
 
-        for y in range(LEFT_EYE.y, LEFT_EYE.y-10, -1):
+        for y in range(LEFT_EYE.y, LEFT_EYE.y-15, -1):
             render_eyes(y1=y, y2=y)
-            time.sleep(0.01)
+            time.sleep(0.05)
 
-        for y in range(LEFT_EYE.y, LEFT_EYE.y+10, 1):
+        if random.randint(0, 1) == 1:
+            blink()
+
+        for y in range(LEFT_EYE.y, LEFT_EYE.y+15, 1):
             render_eyes(y1=y, y2=y)
-            time.sleep(0.01)
+            time.sleep(0.05)
 
-        for y in range(LEFT_EYE.y, LEFT_EYE.y-10, -1):
+        for y in range(LEFT_EYE.y, LEFT_EYE.y-15, -1):
             render_eyes(y1=y, y2=y)
-            time.sleep(0.01)
+            time.sleep(0.05)
 
 
-levitate()
-# time.sleep(1)
+
+render_eyes()
+
+last_look_action = None
+
+look_around()
+# while True:
+#     time.sleep(1)
+#     name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
+#     if name == last_look_action:
+#         time.sleep(1)
+#         continue
+#
+#     # sometimes look around 
+#     # sometimes just levitate
+#     last_look_action = name
+#     look(dx, dy)
+#     time.sleep(1)
+#     center_back()
 
