@@ -49,7 +49,7 @@ fb = framebuf.FrameBuffer(
 tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
 
 DEFAULT_EYE_W = 60
-DEFAULT_EYE_H = 90
+DEFAULT_EYE_H = 75
 
 DEFAULT_LEFT_EYE_X = 50
 DEFAULT_RIGHT_EYE_X = 140
@@ -58,15 +58,6 @@ DEFAULT_EYE_Y = 120 - DEFAULT_EYE_H//2
 
 LOOK_MOVEMENT_RANGE = 10
 LOOK_MOVEMENT_STEP = 2
-
-class Eye:
-  w = DEFAULT_EYE_W
-  h = DEFAULT_EYE_H
-  x = 0
-  y = DEFAULT_EYE_Y
-
-LEFT_EYE = Eye()
-RIGHT_EYE = Eye()
 
 def clear_whole_line(): 
     tft.fill_rect(0, 120 - FONT_HEIGHT, DISPLAY_W, FONT_HEIGHT*2, BLACK)
@@ -211,6 +202,44 @@ def draw_heart(fb, cx, cy, size, color):
         color
     )
 
+class Mood:
+    DEFAULT = 0
+    HUNGRY = 1
+    SLEEPING = 2
+    ANGRY = 3
+    TIRED = 4
+    SAD = 5
+    LOVING = 6
+    SUS = 7
+
+class Eye:
+  w = DEFAULT_EYE_W
+  h = DEFAULT_EYE_H
+  x = 0
+  y = DEFAULT_EYE_Y
+
+
+class Mouth:
+  w = DEFAULT_EYE_W
+  h = DEFAULT_EYE_H
+  x = 0
+  y = DEFAULT_EYE_Y
+
+class Archi:
+    # action_button = button
+    left_eye = Eye()
+    right_eye = Eye()
+    drool: Eye
+    last_button_state = 1
+    mood = Mood.DEFAULT
+    last_look_action: str | None = None
+    hunger = 0
+    tiredness = 0
+    button_clicked = 0
+    anger = 0
+    annoyanse = 0
+
+archi = Archi()
 def render_hearts():
     fb.fill(0)
 
@@ -224,7 +253,7 @@ def render_eyes(
         width1=DEFAULT_EYE_W,
         height2=DEFAULT_EYE_H,
         width2=DEFAULT_EYE_W,
-        x1=50, x2=140, y1 = 0, y2 = 0
+        x1=45, x2=135, y1 = 0, y2 = 0
     ):
     fb.fill(0)
 
@@ -232,19 +261,27 @@ def render_eyes(
     y2 = 120 - height2//2 if y2 == 0 else y2
 
     # left eye
-    LEFT_EYE.x = x1
-    LEFT_EYE.y = y1
-    LEFT_EYE.w = width1
-    LEFT_EYE.h = height1
+    archi.left_eye.x = x1
+    archi.left_eye.y = y1
+    archi.left_eye.w = width1
+    archi.left_eye.h = height1
     draw_eye(fb, x1, y1, width1, height1, 10, WHITE)
 
     # right eye
-    RIGHT_EYE.x = x2
-    RIGHT_EYE.y = y2
-    RIGHT_EYE.w = width2
-    RIGHT_EYE.h = height2
+    archi.right_eye.x = x2
+    archi.right_eye.y = y2
+    archi.right_eye.w = width2
+    archi.right_eye.h = height2
     draw_eye(fb, x2, y2, width2, height2, 10, WHITE)
 
+
+    tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
+
+def render_mouth(top_margin = 0):
+    fill_circle(fb, 120, 165, 15, WHITE)
+
+    # Drool
+    fb.fill_rect(125, 175, 6, 30, WHITE)
 
     tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
 
@@ -252,8 +289,8 @@ def sign(value):
     return (value > 0) - (value < 0)
 
 def center_back():
-    diff_y = DEFAULT_EYE_Y - LEFT_EYE.y
-    diff_x = DEFAULT_LEFT_EYE_X - LEFT_EYE.x
+    diff_y = DEFAULT_EYE_Y - archi.left_eye.y
+    diff_x = DEFAULT_LEFT_EYE_X - archi.left_eye.x
     dy = sign(diff_y)
     dx = sign(diff_x)
     look_to(dx, dy)
@@ -275,10 +312,10 @@ def look_to(dx, dy):
 
     while abs(x) <= LOOK_MOVEMENT_RANGE and abs(y) <= LOOK_MOVEMENT_RANGE:
         render_eyes(
-            y1=LEFT_EYE.y + y,
-            x1=LEFT_EYE.x + x,
-            y2=RIGHT_EYE.y + y,
-            x2=RIGHT_EYE.x + x
+            y1=archi.left_eye.y + y,
+            x1=archi.left_eye.x + x,
+            y2=archi.left_eye.y + y,
+            x2=archi.left_eye.x + x
         )
 
         x += dx * LOOK_MOVEMENT_STEP
@@ -306,20 +343,20 @@ def squeeze_eyes_and_back():
         render_eyes(height1=h, height2=h)
         time.sleep(0.0001)
     time.sleep(3)
-    for h in range(30, 90, 5):
+    for h in range(30, DEFAULT_EYE_H, 5):
         render_eyes(height1=h, height2=h)
         time.sleep(0.0001)
 
 def susface():
-    for h in range(LEFT_EYE.h, 30, -5):
+    for h in range(archi.left_eye.h, 30, -5):
         render_eyes(height1=h)
         time.sleep(0.0001)
 
 def blink():
-    for h in range(90, 5, -16):
+    for h in range(DEFAULT_EYE_H, 5, -16):
         render_eyes(height1=h, height2=h)
         time.sleep(0.0001)
-    for h in range(5, 90, 16):
+    for h in range(5, DEFAULT_EYE_H, 16):
         render_eyes(height1=h, height2=h)
         time.sleep(0.0001)
 
@@ -352,7 +389,7 @@ def booting_eyes():
     time.sleep(2.5)
 
     # Open eyes fully
-    for h in range(5, 90, 3):
+    for h in range(5, DEFAULT_EYE_H, 3):
         render_eyes(height1=h, height2=h)
         time.sleep(0.001)
 
@@ -364,97 +401,53 @@ def booting_eyes():
     render_eyes()
     # susface()
 
-
-
-def handle_button_press():
-    button = Pin(19, Pin.IN, Pin.PULL_UP)
-    while True:
-        if button.value() == 0:
-            render_text_line_center("Button yes", WHITE)
-            time.sleep(1)
-        else:
-            time.sleep(1)
-            render_text_line_center("Button not", WHITE)
-
-
+LEVITATION_STEP = 1
 def levitate_single():
-    for y in range(LEFT_EYE.y, LEFT_EYE.y+15, 1):
+    for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
-        time.sleep(0.05)
+        time.sleep(0.01)
 
-    for y in range(LEFT_EYE.y, LEFT_EYE.y-15, -1):
+    for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     if random.randint(0, 1) == 1:
         blink()
 
-    for y in range(LEFT_EYE.y, LEFT_EYE.y+15, 1):
+    for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
-        time.sleep(0.05)
+        time.sleep(0.01)
 
-    for y in range(LEFT_EYE.y, LEFT_EYE.y-15, -1):
+    for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
-        time.sleep(0.05)
+        time.sleep(0.01)
 
-def levitate():
+def levitate_forever():
     while True:
         levitate_single()
 
-class Mood:
-    DEFAULT = 0
-    HUNGRY = 1
-    SLEEPING = 2
-    ANGRY = 3
-    TIRED = 4
-    SAD = 5
-    LOVING = 6
-    SUS = 7
 
-class Archi:
-    action_button = Pin(19, Pin.IN, Pin.PULL_UP)
-    mood = Mood.DEFAULT
-    last_look_action: str | None = None
-    hunger = 0
-    tiredness = 0
-    button_clicked = 0
-    anger = 0
-    annoyanse = 0
+    # def check_button_status(self):
+    #     current_state = self.action_button.value()
+    #
+    #     if self.last_button_state == 1 and current_state == 0:
+    #         self.button_clicked += 1
+    #         print("Counter:", self.button_clicked)
+    #         time.sleep(0.2) 
 
-    def check_button_status(self):
-        print("button check")
-        if self.action_button.value() == 0:
-            print("button pressed")
-            time.sleep(1)
-
-archi = Archi()
 # ================= CAT IDENTITY =================
-# MODES:
-    # NORMAL
-    # SAD
-    # HUNGRY
-    # ANGRY
-    # LOVING
-    # SLEEPING
-    # SUS
-
 def default_mood():
-    archi.check_button_status()
     time.sleep(1)
     look_around_reps = random.randrange(1, 3)
     for rep in range(look_around_reps):
-        archi.check_button_status()
         name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
         if name == archi.last_look_action:
-            archi.check_button_status()
             time.sleep(1)
             continue
         archi.last_look_action = name
         look_to(dx, dy)
-        archi.check_button_status()
         time.sleep(1)
         center_back()
-        archi.check_button_status()
         rep += 1
 
     levitate_reps = random.randrange(5, 15)
@@ -465,7 +458,8 @@ def default_mood():
     time.sleep(1)
 
 def hungry_mood():
-    print("bitch I'm sleeping")
+    render_eyes(y1=60, y2=60)
+    render_mouth()
 
 def angry_mood():
     #   1. when annoyed
@@ -477,6 +471,7 @@ def sad_mood():
 
 def sus_mood():
     print("bitch I'm sleeping")
+
 
 def sleeping_mood():
     #   1. specific time of a day
@@ -491,30 +486,33 @@ def tired_mood():
 
 def loving_mood():
     # render_hearts()
+    # if happy -> show curved eyes
     # if pressed once -> light squise eyes 
     # if pressed twice -> more squise eyes 
     # if pressed three time -> 
         # open eyes
         # show hearts
         # show text
-    print("bitch I'm sleeping")
+    print("bitch I'm in love")
 
+def button_pressed(pin):
+    print("Button pressed!")
+    time.sleep(0.2)
+
+button = Pin(19, Pin.IN, Pin.PULL_UP)
+button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)
 
 def main():
+    # hungry_mood()
     # boot()
     # booting_eyes()
     # greeting()
     # render_eyes()
-    #
-    # MAIN EVENT LOOP
-    
-    while True:
-        if archi.mood == Mood.DEFAULT:
-            archi.check_button_status()
-            default_mood()
+    hungry_mood()
+    # while True:
+    #     if archi.mood == Mood.DEFAULT:
+    #         default_mood()
 
 main()
 # TODO: happy birthday 
-
-
 
