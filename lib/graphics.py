@@ -53,3 +53,27 @@ def draw_heart(fb, cx, cy, size, color):
         cx,     cy + r,
         color
     )
+
+def fill_polygon(fb, points, color):
+    # simple scanline polygon fill
+    min_y = min(p[1] for p in points)
+    max_y = max(p[1] for p in points)
+
+    for y in range(min_y, max_y + 1):
+        intersections = []
+        for i in range(len(points)):
+            x1, y1 = points[i]
+            x2, y2 = points[(i + 1) % len(points)]
+
+            if y1 == y2:
+                continue
+            if y >= min(y1, y2) and y < max(y1, y2):
+                x = int(x1 + (y - y1) * (x2 - x1) / (y2 - y1))
+                intersections.append(x)
+
+        intersections.sort()
+
+        for i in range(0, len(intersections), 2):
+            if i+1 < len(intersections):
+                fb.hline(intersections[i], y,
+                         intersections[i+1] - intersections[i], color)
