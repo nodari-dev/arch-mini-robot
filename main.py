@@ -526,9 +526,9 @@ def loving_mood():
 
 def button_pressed(pin):
     time.sleep(0.2)
-    print("Button pressed!")
     # TODO: WHEN TO MAKE IT 0
     archi.button_clicked += 1
+    print("Button pressed types:", archi.button_clicked)
     # if archi.mood == arch.Mood.DEFAULT:
     #     archi.mood = arch.Mood.HUNGRY
     # else:
