@@ -50,32 +50,6 @@ def greeting():
     time.sleep(2)
     text_renderer.clear_whole_line(tft)
 
-def you_beatiful():
-    fb.fill(0)
-    flush_buffer()
-    texts = [
-            ["You look",  "beautiful", "today :)"],
-            ["You look",  "cute", "today"],
-            ["You are", "so so", "gorgeous"],
-            ["Your smile", "brings", "happines"],
-            ["You have", "amazing", "smile"],
-            ["You have", "beautiful", "eyes"]
-    ]
-    lines = random.choice(texts)
-    text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
-
-def happy_birthday():
-    fb.fill(0)
-    tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
-    now = time.localtime()
-    # if today.month == 4 and today.day == 22:
-    # if (now[1], now[2]) == (2, 19):
-        # fb.fill(0)
-        # tft.blit_buffer(buffer, 0, 0, DISPLAY_W, DISPLAY_H)
-        # render_two_text_lines_center("Happy", "birthday!", WHITE)
-        # time.sleep(2)
-        # clear_whole_line()
-
 def boot():
     text_renderer.render_text_line_center(tft, "Arch mini", constants.WHITE)
     time.sleep(2)
@@ -522,20 +496,39 @@ def sleeping_mood():
 def tired_mood():
     print("I'm tired")
 
+def pick_compliment():
+    fb.fill(0)
+    flush_buffer()
+    texts = [
+            ["You look",  "beautiful", "today :)"],
+            ["You look",  "cute", "today"],
+            ["You are", "so so", "gorgeous"],
+            ["Your smile", "brings", "happines"],
+            ["You have", "amazing", "smile"],
+            ["You have", "beautiful", "eyes"]
+    ]
+    lines = random.choice(texts)
+    text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
+
 def loving_mood():
     # render_hearts()
+
+    # if arch.hungry > 60 - only then the loving mode 
     # if happy -> show curved eyes
     # if pressed once -> light squise eyes 
     # if pressed twice -> more squise eyes 
     # if pressed three time -> 
         # open eyes
         # show hearts
-        # show text
+        # show text -> pick_compliment
     print("I'm in love")
+
 
 def button_pressed(pin):
     time.sleep(0.2)
     print("Button pressed!")
+    # TODO: WHEN TO MAKE IT 0
+    archi.button_clicked += 1
     # if archi.mood == arch.Mood.DEFAULT:
     #     archi.mood = arch.Mood.HUNGRY
     # else:
@@ -544,9 +537,21 @@ def button_pressed(pin):
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)
 
+def happy_birthday():
+    t = time.localtime()
+    # 22.04
+    month = t[1]
+    day   = t[2]
+
+    if month == 4 and day == 22:
+        print("Happy birthday, Ecenur!")
+
 def main():
     fb.fill(0)
     flush_buffer()
+
+    # TODO: Implement check of happy_birthday on each mood
+
     # boot()
     # booting_eyes()
     # greeting()
