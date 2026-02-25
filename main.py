@@ -148,7 +148,7 @@ def render_eyes(
 def sign(value):
     return (value > 0) - (value < 0)
 
-def center_back():
+def look_back_to_center():
     diff_y = constants.DEFAULT_EYE_Y - archi.left_eye.y
     diff_x = constants.DEFAULT_LEFT_EYE_X - archi.left_eye.x
     dy = sign(diff_y)
@@ -188,13 +188,13 @@ def look_around():
     look_to(dx1, dy1)
     time.sleep(1)
 
-    center_back()
+    look_back_to_center()
 
     dx2, dy2 = random.choice(list(DIRECTIONS.values()))
     look_to(dx2, dy2)
     time.sleep(1)
 
-    center_back()
+    look_back_to_center()
     time.sleep(1)
 
 def squeeze_eyes_and_back():
@@ -302,7 +302,7 @@ def default_mood():
         archi.last_look_action = name
         look_to(dx, dy)
         time.sleep(1)
-        center_back()
+        look_back_to_center()
         rep += 1
 
     levitate_reps = random.randrange(5, 15)
