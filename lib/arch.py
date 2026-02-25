@@ -1,4 +1,4 @@
-from lib import constants
+import constants
 
 class Mood:
     DEFAULT = 0
@@ -37,6 +37,7 @@ class Archi:
     drool = Drool()
     last_button_state = 1
     mood = Mood.DEFAULT
+    loving_compliment: bool = False
     last_look_action: str | None = None
     hunger = 0
     tiredness = 0

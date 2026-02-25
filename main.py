@@ -83,14 +83,6 @@ def boot():
 
 archi = arch.Archi()
 
-def render_hearts():
-    fb.fill(0)
-
-    graphics.draw_heart(fb, 80, 120, 70, constants.WHITE)
-    graphics.draw_heart(fb, 160, 120, 70, constants.WHITE)
-
-    tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
-
 def render_eyes(
         height1=constants.DEFAULT_EYE_H,
         width1=constants.DEFAULT_EYE_W,
@@ -117,9 +109,18 @@ def render_eyes(
     archi.right_eye.y = y2
     archi.right_eye.w = width2
     archi.right_eye.h = height2
-    graphics.draw_eye(fb, x2, y2, width2, height2, 10, constants.RED)
+    graphics.draw_eye(fb, x2, y2, width2, height2, 10, constants.WHITE)
 
     # tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
+
+def render_loving_eyes(size = 70):
+    fb.fill(0)
+
+    archi.left_eye.y = constants.DEFAULT_LOVING_Y
+    graphics.draw_heart(fb, 75, archi.left_eye.y, size, constants.WHITE)
+
+    archi.right_eye.y = constants.DEFAULT_LOVING_Y
+    graphics.draw_heart(fb, 165, archi.right_eye.y, size, constants.WHITE)
 
 def sign(value):
     return (value > 0) - (value < 0)
@@ -150,9 +151,10 @@ def look_to(dx, dy):
         render_eyes(
             y1=archi.left_eye.y + y,
             x1=archi.left_eye.x + x,
-            y2=archi.left_eye.y + y,
-            x2=archi.left_eye.x + x
+            y2=archi.right_eye.y + y,
+            x2=archi.right_eye.x + x
         )
+        flush_buffer()
 
         x += dx * constants.LOOK_MOVEMENT_STEP
         y += dy * constants.LOOK_MOVEMENT_STEP
@@ -259,19 +261,32 @@ def levitate_default_single():
         flush_buffer()
         time.sleep(0.01)
 
-    # def check_button_status(self):
-    #     current_state = self.action_button.value()
-    #
-    #     if self.last_button_state == 1 and current_state == 0:
-    #         self.button_clicked += 1
-    #         print("Counter:", self.button_clicked)
-    #         time.sleep(0.2) 
+def should_switch_mood(mood):
+    return archi.mood != mood
+
+def switch_mood():
+    new_mode = archi.mood
+    if new_mode == arch.Mood.SUS:
+        sus_mood()
+
+    if new_mode == arch.Mood.LOVING:
+        loving_mood()
+
+def mood_expired(mood_time):
+    now = time.ticks_ms()
+    return time.ticks_diff(now, mood_time) >= 30000
 
 def default_mood():
-    while True:
-        look_around_reps = random.randrange(1, 3)
+    render_eyes()
+    flush_buffer()
+    while archi.mood == arch.Mood.DEFAULT:
+        if should_switch_mood(arch.Mood.DEFAULT):
+            break
+        look_around_reps = random.randrange(1, 2)
         for rep in range(look_around_reps):
             name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
+            if should_switch_mood(arch.Mood.DEFAULT):
+                break
             if name == archi.last_look_action:
                 time.sleep(1)
                 continue
@@ -283,10 +298,13 @@ def default_mood():
 
         levitate_reps = random.randrange(5, 15)
         for rep in range(levitate_reps):
+            if should_switch_mood(arch.Mood.DEFAULT):
+                break
             levitate_default_single()
             rep += 1
 
         time.sleep(1)
+    switch_mood()
 
 
 def render_hungry_mouth(drool_height = archi.drool.h):
@@ -299,6 +317,10 @@ def render_hungry_mouth(drool_height = archi.drool.h):
     # Drool
     archi.drool.h = drool_height
     fb.fill_rect(archi.drool.x, archi.drool.y, archi.drool.w, archi.drool.h, constants.WHITE)
+
+def render_default_mouth(y=archi.mouth.y):
+    # Mouth
+    graphics.fill_circle(fb, archi.mouth.x, y, archi.mouth.r, constants.WHITE)
 
 def blink_with_mouth():
     for h in range(constants.DEFAULT_EYE_H, 5, -16):
@@ -487,9 +509,24 @@ def sad_mood():
             time.sleep(0.01)
 
 def sus_mood():
-    for h in range(archi.left_eye.h, 30, -5):
-        render_eyes(height1=h)
-        time.sleep(0.0001)
+    # finished = False
+    while archi.mood == arch.Mood.SUS:
+        should_switch_mood(arch.Mood.SUS)
+        # if not finished:
+        for h in range(archi.left_eye.h, 30, -5):
+            render_eyes(height1=h, height2=h)
+            flush_buffer()
+            time.sleep(0.0001)
+
+        time.sleep(3)
+
+        for h in range(archi.left_eye.h, 65, 5):
+            render_eyes(height1=h, height2=h)
+            flush_buffer()
+            time.sleep(0.0001)
+            # finished = True
+        time.sleep(3)
+    switch_mood()
 
 def sleeping_mood():
     #   1. specific time of a day
@@ -511,13 +548,40 @@ def pick_compliment():
             ["You are", "so so", "gorgeous"],
             ["Your smile", "brings", "happines"],
             ["You have", "amazing", "smile"],
-            ["You have", "beautiful", "eyes"]
+            ["You have", "beautiful", "eyes"],
+            ["You are", "the best", ":)"],
+            ["You are", "loved", ""],
+            ["You are", "valued", ""],
+            ["I'm", "proud", "of you"],
+            ["You", "bring", "peace"],
+            ["You", "feel", "like home"]
     ]
     lines = random.choice(texts)
     text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
 
+def should_show_compliment():
+    if (archi.loving_compliment):
+        pick_compliment()
+        time.sleep(2)
+        archi.loving_compliment = False
+
 def loving_mood():
-    # render_hearts()
+   while True:
+    for size in range(70, 80, 5):
+        should_show_compliment()
+
+        render_loving_eyes(size)
+        render_default_mouth()
+        flush_buffer()
+        time.sleep(0.005)
+
+    for size in range(80, 70, -5):
+        should_show_compliment()
+
+        render_loving_eyes(size)
+        render_default_mouth()
+        flush_buffer()
+        time.sleep(0.005)
 
     # if arch.hungry > 60 - only then the loving mode 
     # if happy -> show curved eyes
@@ -527,21 +591,26 @@ def loving_mood():
         # open eyes
         # show hearts
         # show text -> pick_compliment
-    print("I'm in love")
-
 
 last_press_time = 0
-DEBOUNCE_MS = 200  # 200ms debounce
-
 def button_pressed(pin):
     global last_press_time
 
     current_time = time.ticks_ms()
 
-    # Check time difference safely
-    if time.ticks_diff(current_time, last_press_time) > DEBOUNCE_MS:
+    if time.ticks_diff(current_time, last_press_time) > 200:
         last_press_time = current_time
         archi.button_clicked += 1
+
+        if archi.button_clicked == 1 and archi.mood == arch.Mood.DEFAULT:
+            archi.mood = arch.Mood.SUS
+
+        if archi.button_clicked == 2 and archi.mood == arch.Mood.SUS:
+            archi.mood = arch.Mood.LOVING
+
+        # if archi.mood == arch.Mood.LOVING:
+        #     archi.loving_compliment = True
+
         print("Button pressed times:", archi.button_clicked)
 
 button = Pin(19, Pin.IN, Pin.PULL_UP)
@@ -569,6 +638,11 @@ def main():
     # flush_buffer()
     # hungry_mood()
     # angry_mood()
+    # default_mood()
+    # archi.mood = arch.Mood.LOVING
+    # loving_mood()
+
+    archi.mood = arch.Mood.DEFAULT
     default_mood()
     # sad_mood()
     # while True:
@@ -576,5 +650,4 @@ def main():
     #         default_mood()
 # TODO: happy birthday 
 
-# ============= DO NOT TOUCH ME OR YOU WILL REGRET LATER =============
 main()
