@@ -96,7 +96,9 @@ def render_eyes(
         width1=constants.DEFAULT_EYE_W,
         height2=constants.DEFAULT_EYE_H,
         width2=constants.DEFAULT_EYE_W,
-        x1=45, x2=135, y1 = 0, y2 = 0
+        x1=constants.DEFAULT_LEFT_EYE_X,
+        x2=constants.DEFAULT_RIGHT_EYE_X, 
+        y1 = 0, y2 = 0
     ):
     fb.fill(0)
 
@@ -115,7 +117,7 @@ def render_eyes(
     archi.right_eye.y = y2
     archi.right_eye.w = width2
     archi.right_eye.h = height2
-    graphics.draw_eye(fb, x2, y2, width2, height2, 10, constants.WHITE)
+    graphics.draw_eye(fb, x2, y2, width2, height2, 10, constants.RED)
 
     # tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
 
@@ -266,25 +268,25 @@ def levitate_default_single():
     #         time.sleep(0.2) 
 
 def default_mood():
-    time.sleep(1)
-    look_around_reps = random.randrange(1, 3)
-    for rep in range(look_around_reps):
-        name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
-        if name == archi.last_look_action:
+    while True:
+        look_around_reps = random.randrange(1, 3)
+        for rep in range(look_around_reps):
+            name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
+            if name == archi.last_look_action:
+                time.sleep(1)
+                continue
+            archi.last_look_action = name
+            look_to(dx, dy)
             time.sleep(1)
-            continue
-        archi.last_look_action = name
-        look_to(dx, dy)
+            look_back_to_center()
+            rep += 1
+
+        levitate_reps = random.randrange(5, 15)
+        for rep in range(levitate_reps):
+            levitate_default_single()
+            rep += 1
+
         time.sleep(1)
-        look_back_to_center()
-        rep += 1
-
-    levitate_reps = random.randrange(5, 15)
-    for rep in range(levitate_reps):
-        levitate_default_single()
-        rep += 1
-
-    time.sleep(1)
 
 
 def render_hungry_mouth(drool_height = archi.drool.h):
@@ -356,7 +358,9 @@ def render_angry_eyes(
         width1=constants.DEFAULT_EYE_W,
         height2=constants.DEFAULT_EYE_H-15,
         width2=constants.DEFAULT_EYE_W,
-        x1=45, x2=135, y1 = 0, y2 = 0):
+        x1=constants.DEFAULT_LEFT_EYE_X,
+        x2=constants.DEFAULT_RIGHT_EYE_X, 
+        y1 = 0, y2 = 0):
     points_left = [
         (x1, y1),                 # top outer
         (x1 + width1, y1 + 20),        # top inner (lower)
@@ -394,7 +398,9 @@ def render_sad_eyes(
         width1=constants.DEFAULT_EYE_W,
         height2=constants.DEFAULT_EYE_H-15,
         width2=constants.DEFAULT_EYE_W,
-        x1=45, x2=135, y1 = 0, y2 = 0):
+        x1=constants.DEFAULT_LEFT_EYE_X,
+        x2=constants.DEFAULT_RIGHT_EYE_X, 
+        y1 = 0, y2 = 0):
     points_left = [
         (x1, y1+25),                 # top outer
         (x1 + width1, y1),        # top inner (lower)
@@ -524,15 +530,19 @@ def loving_mood():
     print("I'm in love")
 
 
+last_press_time = 0
+DEBOUNCE_MS = 200  # 200ms debounce
+
 def button_pressed(pin):
-    time.sleep(0.2)
-    # TODO: WHEN TO MAKE IT 0
-    archi.button_clicked += 1
-    print("Button pressed types:", archi.button_clicked)
-    # if archi.mood == arch.Mood.DEFAULT:
-    #     archi.mood = arch.Mood.HUNGRY
-    # else:
-    #     archi.mood = arch.Mood.DEFAULT
+    global last_press_time
+
+    current_time = time.ticks_ms()
+
+    # Check time difference safely
+    if time.ticks_diff(current_time, last_press_time) > DEBOUNCE_MS:
+        last_press_time = current_time
+        archi.button_clicked += 1
+        print("Button pressed times:", archi.button_clicked)
 
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)
@@ -558,7 +568,8 @@ def main():
     # render_eyes()
     # flush_buffer()
     # hungry_mood()
-    angry_mood()
+    # angry_mood()
+    default_mood()
     # sad_mood()
     # while True:
     #     if archi.mood == Mood.DEFAULT:
