@@ -262,22 +262,22 @@ def levitate_default_single(timeout = 0.01):
 
 def switch_mode():
     new_mode = archi.mod
-    if new_mode == arch.Mod.SUS:
+    if new_mode == arch.Mode.SUS:
         sus_mode()
 
-    if new_mode == arch.Mod.LOVING:
+    if new_mode == arch.Mode.LOVING:
         loving_mode()
 
 def default_mode():
     render_eyes()
     flush_buffer()
-    while archi.mod == arch.Mod.DEFAULT:
-        if archi.should_switch_mod(arch.Mod.DEFAULT):
+    while archi.mod == arch.Mode.DEFAULT:
+        if archi.should_switch_mod(arch.Mode.DEFAULT):
             break
 
         levitate_reps = random.randrange(5, 15)
         for rep in range(levitate_reps):
-            if archi.should_switch_mod(arch.Mod.DEFAULT):
+            if archi.should_switch_mod(arch.Mode.DEFAULT):
                 break
             levitate_default_single()
             rep += 1
@@ -285,7 +285,7 @@ def default_mode():
         look_around_reps = random.randrange(1, 2)
         for rep in range(look_around_reps):
             name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
-            if archi.should_switch_mod(arch.Mod.DEFAULT):
+            if archi.should_switch_mod(arch.Mode.DEFAULT):
                 break
             if name == archi.last_look_action:
                 time.sleep(1)
@@ -500,8 +500,8 @@ def sad_mode():
             time.sleep(0.01)
 
 def sus_mode():
-    while archi.mod == arch.Mod.SUS:
-        archi.should_switch_mod(arch.Mod.SUS)
+    while archi.mod == arch.Mode.SUS:
+        archi.should_switch_mod(arch.Mode.SUS)
         for h in range(archi.left_eye.h, 30, -5):
             render_eyes(height1=h, height2=h)
             flush_buffer()
@@ -517,12 +517,32 @@ def sus_mode():
     switch_mode()
 
 def sleeping_mode():
+    # while archi.mod == arch.Mode.SLEEPING:
+    for h in range(archi.left_eye.h, 5, -1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.0001)
+    while True: 
+        for r in range(archi.mouth.r, 23, 1):
+            render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+            render_default_mouth(r=r)
+            flush_buffer()
+            time.sleep(0.01)
+
+        time.sleep(0.5)
+
+        for r in range(archi.mouth.r, 0, -1):
+            render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+            render_default_mouth(r=r)
+            flush_buffer()
+            time.sleep(0.01)
+        time.sleep(2.5)
     #   1. specific time of a day
     #   2. after food
     #   3. can be woken up
     #   4. count down the tiredness
     #   5. if tiredness => 50 then angry face
-    print("I'm sleeping")
+    switch_mode()
 
 def tired_mode():
     # SLOWLY squise eys
@@ -533,8 +553,7 @@ def tired_mode():
     # archi.should_switch_mod(arch.Mod.TIRED)
     render_eyes()
     flush_buffer()
-    # while archi.mod == arch.Mod.TIRED:
-    while True:
+    while archi.mod == arch.Mode.TIRED:
         # if archi.should_switch_mod(arch.Mod.TIRED):
         #     break
         if random.randrange(1, 5) == 1:
@@ -631,7 +650,8 @@ def pick_compliment():
             ["You are", "valued", ""],
             ["I'm", "proud", "of you"],
             ["You", "bring", "peace"],
-            ["You", "feel", "like home"]
+            ["You", "feel", "like home"],
+            ["I love", "your", "smell"]
     ]
     lines = random.choice(texts)
     text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
@@ -679,11 +699,11 @@ def button_pressed(pin):
         last_press_time = current_time
         archi.button_clicked += 1
 
-        if archi.button_clicked == 1 and archi.mod == arch.Mod.DEFAULT:
-            archi.mod = arch.Mod.SUS
+        if archi.button_clicked == 1 and archi.mod == arch.Mode.DEFAULT:
+            archi.mod = arch.Mode.SUS
 
-        if archi.button_clicked == 2 and archi.mod == arch.Mod.SUS:
-            archi.mod = arch.Mod.LOVING
+        if archi.button_clicked == 2 and archi.mod == arch.Mode.SUS:
+            archi.mod = arch.Mode.LOVING
 
         # if archi.mode == arch.Mode.LOVING:
         #     archi.loving_compliment = True
@@ -720,7 +740,8 @@ def main():
     # loving_mode()
 
     # default_mode()
-    tired_mode()
+    # tired_mode()
+    sleeping_mode()
     # sad_mode()
     # while True:
     #     if archi.mode == Mood.DEFAULT:

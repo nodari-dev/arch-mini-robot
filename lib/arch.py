@@ -1,7 +1,7 @@
 import constants
 import time
 
-class Mod:
+class Mode:
     DEFAULT = 0
     HUNGRY = 1
     SLEEPING = 2
@@ -36,7 +36,7 @@ class Archi:
     mouth = Mouth()
     drool = Drool()
     last_button_state = 1
-    mod = Mod.DEFAULT
+    mod = Mode.DEFAULT
     loving_compliment: bool = False
     last_look_action: str | None = None
     hunger = 0
