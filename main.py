@@ -330,8 +330,6 @@ def blink_with_mouth():
     time.sleep(0.05)
 
 def hungry_mode():
-    # blink random
-    # drool up and right
     render_eyes()
     render_hungry_mouth()
     flush_buffer()
