@@ -1,4 +1,5 @@
 import constants
+import time
 
 class Mood:
     DEFAULT = 0
@@ -44,3 +45,11 @@ class Archi:
     button_clicked = 0
     anger = 0
     annoyanse = 0
+
+    def should_switch_mood(self, mood):
+        return self.mood != mood
+
+def mood_expired(mood_time):
+    now = time.ticks_ms()
+    return time.ticks_diff(now, mood_time) >= 30000
+

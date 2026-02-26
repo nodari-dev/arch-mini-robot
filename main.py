@@ -261,8 +261,6 @@ def levitate_default_single():
         flush_buffer()
         time.sleep(0.01)
 
-def should_switch_mood(mood):
-    return archi.mood != mood
 
 def switch_mood():
     new_mode = archi.mood
@@ -272,20 +270,16 @@ def switch_mood():
     if new_mode == arch.Mood.LOVING:
         loving_mood()
 
-def mood_expired(mood_time):
-    now = time.ticks_ms()
-    return time.ticks_diff(now, mood_time) >= 30000
-
 def default_mood():
     render_eyes()
     flush_buffer()
     while archi.mood == arch.Mood.DEFAULT:
-        if should_switch_mood(arch.Mood.DEFAULT):
+        if archi.should_switch_mood(arch.Mood.DEFAULT):
             break
         look_around_reps = random.randrange(1, 2)
         for rep in range(look_around_reps):
             name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
-            if should_switch_mood(arch.Mood.DEFAULT):
+            if archi.should_switch_mood(arch.Mood.DEFAULT):
                 break
             if name == archi.last_look_action:
                 time.sleep(1)
@@ -298,7 +292,7 @@ def default_mood():
 
         levitate_reps = random.randrange(5, 15)
         for rep in range(levitate_reps):
-            if should_switch_mood(arch.Mood.DEFAULT):
+            if archi.should_switch_mood(arch.Mood.DEFAULT):
                 break
             levitate_default_single()
             rep += 1
@@ -511,7 +505,7 @@ def sad_mood():
 def sus_mood():
     # finished = False
     while archi.mood == arch.Mood.SUS:
-        should_switch_mood(arch.Mood.SUS)
+        archi.should_switch_mood(arch.Mood.SUS)
         # if not finished:
         for h in range(archi.left_eye.h, 30, -5):
             render_eyes(height1=h, height2=h)
