@@ -143,7 +143,7 @@ DIRECTIONS = {
     "bottom_right": (1, 1),
 }
 
-def look_to(dx, dy):
+def look_to(dx, dy, timeout = 0.001):
     x = 0
     y = 0
 
@@ -159,7 +159,7 @@ def look_to(dx, dy):
         x += dx * constants.LOOK_MOVEMENT_STEP
         y += dy * constants.LOOK_MOVEMENT_STEP
 
-        time.sleep(0.001)
+        time.sleep(timeout)
 
 def look_around():
     dx1, dy1 = random.choice(list(DIRECTIONS.values()))
@@ -234,19 +234,18 @@ def booting_eyes():
     squeeze_eyes_and_back()
     time.sleep(1)
     render_eyes()
-    # susface()
 
 LEVITATION_STEP = 1
-def levitate_default_single():
+def levitate_default_single(timeout = 0.01):
     for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
         flush_buffer()
-        time.sleep(0.01)
+        time.sleep(timeout)
 
     for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
         flush_buffer()
-        time.sleep(0.01)
+        time.sleep(timeout)
 
     if random.randint(0, 1) == 1:
         blink_default_eyes()
@@ -254,13 +253,12 @@ def levitate_default_single():
     for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
         flush_buffer()
-        time.sleep(0.01)
+        time.sleep(timeout)
 
     for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
         render_eyes(y1=y, y2=y)
         flush_buffer()
-        time.sleep(0.01)
-
+        time.sleep(timeout)
 
 def switch_mode():
     new_mode = archi.mod
@@ -276,6 +274,14 @@ def default_mode():
     while archi.mod == arch.Mod.DEFAULT:
         if archi.should_switch_mod(arch.Mod.DEFAULT):
             break
+
+        levitate_reps = random.randrange(5, 15)
+        for rep in range(levitate_reps):
+            if archi.should_switch_mod(arch.Mod.DEFAULT):
+                break
+            levitate_default_single()
+            rep += 1
+
         look_around_reps = random.randrange(1, 2)
         for rep in range(look_around_reps):
             name, (dx, dy) = random.choice(list(DIRECTIONS.items()))
@@ -288,13 +294,6 @@ def default_mode():
             look_to(dx, dy)
             time.sleep(1)
             look_back_to_center()
-            rep += 1
-
-        levitate_reps = random.randrange(5, 15)
-        for rep in range(levitate_reps):
-            if archi.should_switch_mod(arch.Mod.DEFAULT):
-                break
-            levitate_default_single()
             rep += 1
 
         time.sleep(1)
@@ -312,8 +311,8 @@ def render_hungry_mouth(drool_height = archi.drool.h):
     archi.drool.h = drool_height
     fb.fill_rect(archi.drool.x, archi.drool.y, archi.drool.w, archi.drool.h, constants.WHITE)
 
-def render_default_mouth(y=archi.mouth.y):
-    # Mouth
+def render_default_mouth(y=archi.mouth.y, r=archi.mouth.r):
+    archi.mouth.r = r
     graphics.fill_circle(fb, archi.mouth.x, y, archi.mouth.r, constants.WHITE)
 
 def blink_with_mouth():
@@ -503,7 +502,6 @@ def sad_mode():
 def sus_mode():
     while archi.mod == arch.Mod.SUS:
         archi.should_switch_mod(arch.Mod.SUS)
-        # if not finished:
         for h in range(archi.left_eye.h, 30, -5):
             render_eyes(height1=h, height2=h)
             flush_buffer()
@@ -515,7 +513,6 @@ def sus_mode():
             render_eyes(height1=h, height2=h)
             flush_buffer()
             time.sleep(0.0001)
-            # finished = True
         time.sleep(3)
     switch_mode()
 
@@ -533,7 +530,92 @@ def tired_mode():
     # randomly SLOW look around
     # no levitaion
 
-    print("I'm tired")
+    # archi.should_switch_mod(arch.Mod.TIRED)
+    render_eyes()
+    flush_buffer()
+    # while archi.mod == arch.Mod.TIRED:
+    while True:
+        # if archi.should_switch_mod(arch.Mod.TIRED):
+        #     break
+        if random.randrange(1, 5) == 1:
+            for h in range(archi.left_eye.h, 5, -1):
+                render_eyes(height1=h, height2=h)
+                flush_buffer()
+                time.sleep(0.0001)
+
+            time.sleep(1)
+
+            for r in range(archi.mouth.r, 23, 1):
+                # render_eyes(height1=5, height2=5)
+                render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+                render_default_mouth(r=r)
+                flush_buffer()
+                time.sleep(0.01)
+
+            time.sleep(1)
+
+            for r in range(archi.mouth.r, 0, -1):
+                render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+                # render_eyes(height1=5, height2=5)
+                render_default_mouth(r=r)
+                flush_buffer()
+                time.sleep(0.01)
+
+            time.sleep(1)
+                
+            for h in range(archi.left_eye.h, constants.DEFAULT_EYE_H, 5):
+                # if archi.should_switch_mod(arch.Mod.TIRED):
+                #     break
+                render_eyes(height1=h, height2=h)
+                flush_buffer()
+                time.sleep(0.0001)
+            time.sleep(1)
+
+        if random.randrange(1, 3) == 1:
+            for h in range(archi.left_eye.h, 5, -1):
+                # if archi.should_switch_mod(arch.Mod.TIRED):
+                #     break
+                render_eyes(height1=h, height2=h)
+                flush_buffer()
+                time.sleep(0.0001)
+
+            time.sleep(3)
+
+            for h in range(archi.left_eye.h, constants.DEFAULT_EYE_H, 5):
+                # if archi.should_switch_mod(arch.Mod.TIRED):
+                #     break
+                render_eyes(height1=h, height2=h)
+                flush_buffer()
+                time.sleep(0.0001)
+            time.sleep(1)
+
+        levitation_steps = random.randrange(1, 6)
+        # levitate
+        for step in range(levitation_steps):
+            for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
+                render_eyes(y1=y, y2=y)
+                flush_buffer()
+                time.sleep(0.01)
+
+            for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
+                render_eyes(y1=y, y2=y)
+                flush_buffer()
+                time.sleep(0.01)
+
+            for y in range(archi.left_eye.y, archi.left_eye.y+15, LEVITATION_STEP):
+                render_eyes(y1=y, y2=y)
+                flush_buffer()
+                time.sleep(0.01)
+
+            for y in range(archi.left_eye.y, archi.left_eye.y-15, -LEVITATION_STEP):
+                render_eyes(y1=y, y2=y)
+                flush_buffer()
+                time.sleep(0.01)
+
+            step += 1
+        time.sleep(1)
+
+    switch_mode()
 
 def pick_compliment():
     fb.fill(0)
@@ -637,7 +719,8 @@ def main():
     # archi.mode = arch.Mood.LOVING
     # loving_mode()
 
-    default_mode()
+    # default_mode()
+    tired_mode()
     # sad_mode()
     # while True:
     #     if archi.mode == Mood.DEFAULT:
