@@ -1,7 +1,7 @@
 import constants
 import time
 
-class Mood:
+class Mod:
     DEFAULT = 0
     HUNGRY = 1
     SLEEPING = 2
@@ -11,7 +11,7 @@ class Mood:
     LOVING = 6
     SUS = 7
     EATING = 8
-
+    TIRED = 8
 
 class Eye:
   w = constants.DEFAULT_EYE_W
@@ -36,7 +36,7 @@ class Archi:
     mouth = Mouth()
     drool = Drool()
     last_button_state = 1
-    mood = Mood.DEFAULT
+    mod = Mod.DEFAULT
     loving_compliment: bool = False
     last_look_action: str | None = None
     hunger = 0
@@ -45,10 +45,10 @@ class Archi:
     anger = 0
     annoyanse = 0
 
-    def should_switch_mood(self, mood):
-        return self.mood != mood
+    def should_switch_mod(self, mod):
+        return self.mod != mod
 
-def mood_expired(mood_time):
+def mood_expired(mode_time):
     now = time.ticks_ms()
-    return time.ticks_diff(now, mood_time) >= 30000
+    return time.ticks_diff(now, mode_time) >= 30000
 
