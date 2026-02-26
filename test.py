@@ -1,10 +1,16 @@
-import time 
-def happy_birthday():
-    t = time.localtime()
+import time
 
-    month = t[1]
-    day   = t[2]
+def mood_expired(mood_time):
+    # now = time.ticks_ms()
+    # return time.ticks_diff(now, mood_time) >= 30000
+    now = time.time()
+    return (now - mood_time) >= 5
 
-    if month == 4 and day == 22:
-        print("Happy birthday, Ecenur!")
-happy_birthday()
+# activity_started = time.ticks_ms()
+activity_started = time.time()
+print("Started")
+while not mood_expired(activity_started):
+    print("Working")
+    time.sleep(0.2)
+print("end")
+

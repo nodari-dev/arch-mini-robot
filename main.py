@@ -531,6 +531,11 @@ def sleeping_mood():
     print("I'm sleeping")
 
 def tired_mood():
+    # slowly squise eys
+    # fast open it
+    # randomly slow look around
+    # no levitaion
+
     print("I'm tired")
 
 def pick_compliment():
@@ -541,7 +546,6 @@ def pick_compliment():
             ["You look",  "cute", "today"],
             ["You are", "so so", "gorgeous"],
             ["Your smile", "brings", "happines"],
-            ["You have", "amazing", "smile"],
             ["You have", "beautiful", "eyes"],
             ["You are", "the best", ":)"],
             ["You are", "loved", ""],
@@ -636,7 +640,6 @@ def main():
     # archi.mood = arch.Mood.LOVING
     # loving_mood()
 
-    archi.mood = arch.Mood.DEFAULT
     default_mood()
     # sad_mood()
     # while True:

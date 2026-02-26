@@ -31,7 +31,6 @@ class Drool:
   y = constants.DEFAULT_DROOL_Y
 
 class Archi:
-    # action_button = button
     left_eye = Eye()
     right_eye = Eye()
     mouth = Mouth()
