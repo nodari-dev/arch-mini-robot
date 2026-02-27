@@ -72,6 +72,15 @@ class Archi:
         
         # combine multiple moods
         # if not hungry anymore and still tired > show next emotion
+
+        
+        # SLEEPING 
+        #   1. specific time of a day
+        #   2. after food
+        #   3. can be woken up
+        #   4. count down the tiredness
+        #   5. if tiredness => 50 then angry face
+
         if self.hunger > 50:
             print("hugry")
         if self.tiredness > 50:
@@ -102,5 +111,3 @@ class Archi:
 def time_for_mood_expired(mode_time):
     now = time.ticks_ms()
     return time.ticks_diff(now, mode_time) >= 30000
-
-
