@@ -94,16 +94,45 @@ class Archi:
         if self.happiness < 25:
             print("sad")
 
-    def cycle_completed(self):
+    def min20_passed(self):
         self.hunger += 10
         self.tiredness += 10
+        if self.hunger > 60:
+            self.happiness -= 5
 
-    def decrease_tiredness(self):
-        self.tiredness -= 10
+    def change_tiredness(self, value, increase = True):
+        if increase:
+            self.tiredness = max(0, min(self.tiredness+value, 100))
+        else:
+            self.tiredness = max(0, min(self.tiredness-value, 100))
+
+    def change_hunger(self, value, increase = True):
+        if increase:
+            self.hunger = max(0, min(self.hunger+value, 100))
+        else:
+            self.hunger = max(0, min(self.hunger-value, 100)) 
+
+    def change_happiness(self, value, increase = True):
+        if increase:
+            self.happiness = max(0, min(self.happiness+value, 100))
+        else:
+            self.happiness = max(0, min(self.happiness-value, 100))
+
+    def change_anger(self, value, increase = True):
+        if increase:
+            self.anger = max(0, min(self.anger+value, 100))
+        else:
+            self.anger = max(0, min(self.anger-value, 100))
+
+    def change_annoy(self, value, increase = True):
+        if increase:
+            self.anger = max(0, min(self.anger+value, 100))
+        else:
+            self.anger = max(0, min(self.anger-value, 100))
 
     def eating_completed(self):
         self.hunger = 0
-        self.happiness += 30
+        self.happiness += 40
         # can fall asleep after meal
         if random.randint(1, 5) == 1:
             self.tiredness = 100
