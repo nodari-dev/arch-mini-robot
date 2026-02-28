@@ -720,7 +720,42 @@ def loving_mood():
         # show text -> pick_compliment
 
 def eating_mood():
-    print("nom nom nom")
+    for h in range(archi.left_eye.h, 25, -1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.0001)
+    while True:
+        for i in range(10):
+            for w in range(36, 48, 2):
+                fb.fill(0)
+                render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+                # render_eyes(height1=25, height2=25)
+                x_mouth = 125 - w // 2
+                fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
+                fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
+                fb.fill_rect(x_mouth+w+5, 160, 3, 20, constants.WHITE)
+
+                flush_buffer()
+                time.sleep(0.02)
+
+            for w in range(48, 36, -2):
+                fb.fill(0)
+                render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
+                # render_eyes(height1=25, height2=25)
+                x_mouth = 125 - w // 2
+                fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
+                fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
+                fb.fill_rect(x_mouth+w+5, 160, 3, 20, constants.WHITE)
+
+                flush_buffer()
+                time.sleep(0.02)
+            i +=1
+
+        # REMOVE ME
+        time.sleep(3)
+        # REMOVE ME
+
+    # archi.mood = arch.MOOD.DEFAULT
 
 def waking_up_mood():
     print("waking up")
@@ -734,6 +769,9 @@ def button_pressed(pin):
     if time.ticks_diff(current_time, last_press_time) > 200:
         last_press_time = current_time
         # IGNORE IF SPECIFIC MODE IS ENABLED
+        if archi.mood == arch.MOOD.EATING or archi.mood == arch.MOOD.WAKING_UP:
+            return
+
         archi.button_clicked += 1
 
         if archi.button_clicked == 1 and archi.mood == arch.MOOD.DEFAULT:
@@ -760,27 +798,26 @@ def happy_birthday():
         print("Happy birthday, Ecenur!")
 
 def render_mood():
-    match archi.mood:
-        case arch.MOOD.DEFAULT:
-            default_mood()
-        case arch.MOOD.HUNGRY:
-            hungry_mood()
-        case arch.MOOD.SLEEPING:
-            sleeping_mood()
-        case arch.MOOD.WAKING_UP:
-            waking_up_mood()
-        case arch.MOOD.ANGRY:
-            angry_mood()
-        case arch.MOOD.TIRED:
-            tired_mood()
-        case arch.MOOD.SAD:
-            sad_mood()
-        case arch.MOOD.LOVING:
-            loving_mood()
-        case arch.MOOD.SUS:
-            sus_mood()
-        case arch.MOOD.EATING:
-            eating_mood()
+    if archi.mood == arch.MOOD.DEFAULT:
+        default_mood()
+    elif archi.mood == arch.MOOD.HUNGRY:
+        hungry_mood()
+    elif archi.mood == arch.MOOD.SLEEPING:
+        sleeping_mood()
+    elif archi.mood == arch.MOOD.WAKING_UP:
+        waking_up_mood()
+    elif archi.mood == arch.MOOD.ANGRY:
+        angry_mood()
+    elif archi.mood == arch.MOOD.TIRED:
+        tired_mood()
+    elif archi.mood == arch.MOOD.SAD:
+        sad_mood()
+    elif archi.mood == arch.MOOD.LOVING:
+        loving_mood()
+    elif archi.mood == arch.MOOD.SUS:
+        sus_mood()
+    elif archi.mood == arch.MOOD.EATING:
+        eating_mood()
 
 def main():
     fb.fill(0)
@@ -788,11 +825,11 @@ def main():
     # boot()
     # booting_eyes()
     # greeting()
+    archi.mood = arch.MOOD.EATING
     while True:
         render_mood()
     # TODO: Implement check of happy_birthday on each mode
 
-    sleeping_mood()
 # TODO: happy birthday 
 
 main()
