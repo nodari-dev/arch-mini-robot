@@ -35,3 +35,18 @@ DEFAULT_DROOL_W = 6
 DEFAULT_DROOL_H = 30
 DEFAULT_DROOL_X = 125
 DEFAULT_DROOL_Y = 175
+
+COMPLIMENTS = [
+        ["You look",  "beautiful", "today :)"],
+        ["You look",  "cute", "today"],
+        ["You are", "so so", "gorgeous"],
+        ["Your smile", "brings", "happines"],
+        ["You have", "beautiful", "eyes"],
+        ["You are", "the best", ":)"],
+        ["You are", "loved", ""],
+        ["You are", "valued", ""],
+        ["I'm", "proud", "of you"],
+        ["You", "bring", "peace"],
+        ["You", "feel", "like home"],
+        ["I love", "your", "smell"]
+]

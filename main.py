@@ -654,21 +654,7 @@ def tired_mood():
 def pick_compliment():
     fb.fill(0)
     flush_buffer()
-    texts = [
-            ["You look",  "beautiful", "today :)"],
-            ["You look",  "cute", "today"],
-            ["You are", "so so", "gorgeous"],
-            ["Your smile", "brings", "happines"],
-            ["You have", "beautiful", "eyes"],
-            ["You are", "the best", ":)"],
-            ["You are", "loved", ""],
-            ["You are", "valued", ""],
-            ["I'm", "proud", "of you"],
-            ["You", "bring", "peace"],
-            ["You", "feel", "like home"],
-            ["I love", "your", "smell"]
-    ]
-    lines = random.choice(texts)
+    lines = random.choice(constants.COMPLIMENTS)
     text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
 
 def should_show_compliment():
