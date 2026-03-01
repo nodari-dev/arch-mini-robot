@@ -47,7 +47,7 @@ def greeting():
     fb.fill(0)
     tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
     text_renderer.render_text_line_center(tft, "Hi cutie :)", constants.WHITE)
-    time.sleep(2)
+    time.sleep(1)
     text_renderer.clear_whole_line(tft)
 
 def boot():
@@ -175,16 +175,6 @@ def look_around():
     look_back_to_center()
     time.sleep(1)
 
-def squeeze_eyes_and_back():
-    for h in range(constants.DEFAULT_EYE_H, 30, -5):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-    time.sleep(3)
-    for h in range(30, constants.DEFAULT_EYE_H, 5):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-
-
 def blink_default_eyes():
     for h in range(constants.DEFAULT_EYE_H, 5, -16):
         render_eyes(height1=h, height2=h)
@@ -237,7 +227,13 @@ def booting_eyes():
     time.sleep(1)
     blink_default_eyes()
     look_around()
-    squeeze_eyes_and_back()
+    for h in range(constants.DEFAULT_EYE_H, 30, -5):
+        render_eyes(height1=h, height2=h)
+        time.sleep(0.0001)
+    time.sleep(3)
+    for h in range(30, constants.DEFAULT_EYE_H, 5):
+        render_eyes(height1=h, height2=h)
+        time.sleep(0.0001)
     time.sleep(1)
     render_eyes()
     flush_buffer()
@@ -778,7 +774,7 @@ def button_pressed(pin):
     if time.ticks_diff(current_time, last_press_time) > 200:
         last_press_time = current_time
         # IGNORE IF SPECIFIC MODE IS ENABLED
-        if archi.mood == arch.MOOD.EATING or archi.mood == arch.MOOD.WAKING_UP:
+        if archi.mood == arch.MOOD.BOOTING_UP or archi.mood == arch.MOOD.EATING or archi.mood == arch.MOOD.WAKING_UP:
             return
 
         archi.button_clicked += 1
@@ -789,8 +785,8 @@ def button_pressed(pin):
         if archi.button_clicked == 2 and archi.mood == arch.MOOD.SUS:
             archi.mood = arch.MOOD.LOVING
 
-        # if archi.mode == arch.MOOD.LOVING:
-        #     archi.loving_compliment = True
+        if archi.mode == arch.MOOD.LOVING:
+            archi.loving_compliment = True
 
         print("Button pressed times:", archi.button_clicked)
 
@@ -806,7 +802,18 @@ def happy_birthday():
     if month == 4 and day == 22:
         print("Happy birthday, Ecenur!")
 
+def booting_up_mood():
+    fb.fill(0)
+    flush_buffer()
+    boot()
+    booting_eyes()
+    greeting()
+    archi.mood = arch.MOOD.DEFAULT
+    time.sleep(1)
+
 def render_mood():
+    if archi.mood == arch.MOOD.BOOTING_UP:
+        booting_up_mood()
     if archi.mood == arch.MOOD.DEFAULT:
         default_mood()
     elif archi.mood == arch.MOOD.HUNGRY:
@@ -829,16 +836,8 @@ def render_mood():
         eating_mood()
 
 def main():
-    fb.fill(0)
-    flush_buffer()
-    # boot()
-    booting_eyes()
-    greeting()
-    archi.mood = arch.MOOD.EATING
     while True:
         render_mood()
     # TODO: Implement check of happy_birthday on each mode
-
-# TODO: happy birthday 
 
 main()

@@ -13,6 +13,7 @@ class MOOD:
     SUS = 7
     EATING = 8
     WAKING_UP = 9
+    BOOTING_UP = 9
 
 class MOOD_FACTOR:
     HUNGER = 0
@@ -43,7 +44,7 @@ class Archi:
     right_eye = Eye()
     mouth = Mouth()
     drool = Drool()
-    mood = MOOD.DEFAULT
+    mood = MOOD.BOOTING_UP
     loving_compliment: bool = False
     last_look_action: str | None = None
     # button
