@@ -199,26 +199,31 @@ def blink_default_eyes():
 
 def booting_eyes():
     render_eyes(height1=5, height2=5)
+    flush_buffer()
     time.sleep(1)
 
     # try to open eyes
     for h in range(5, 20, 1):
         render_eyes(height1=h, height2=h)
+        flush_buffer()
         time.sleep(0.001)
 
     for h in range(20, 5, -1):
         render_eyes(height1=h, height2=h)
+        flush_buffer()
         time.sleep(0.001)
 
     time.sleep(1)
 
     for h in range(5, 20, 1):
         render_eyes(height1=h, height2=h)
+        flush_buffer()
         time.sleep(0.001)
     time.sleep(1)
 
     for h in range(20, 5, -1):
         render_eyes(height1=h, height2=h)
+        flush_buffer()
         time.sleep(0.001)
 
     time.sleep(2.5)
@@ -226,6 +231,7 @@ def booting_eyes():
     # Open eyes fully
     for h in range(5, constants.DEFAULT_EYE_H, 3):
         render_eyes(height1=h, height2=h)
+        flush_buffer()
         time.sleep(0.001)
 
     time.sleep(1)
@@ -234,6 +240,7 @@ def booting_eyes():
     squeeze_eyes_and_back()
     time.sleep(1)
     render_eyes()
+    flush_buffer()
 
 LEVITATION_STEP = 1
 def levitate_default_single(timeout = 0.01):
@@ -719,17 +726,26 @@ def loving_mood():
         # show hearts
         # show text -> pick_compliment
 
+def mood_expired(mood_time):
+    now = time.ticks_ms()
+    # Eeating for 10s
+    return time.ticks_diff(now, mood_time) >= 10000
+
 def eating_mood():
     for h in range(archi.left_eye.h, 25, -1):
         render_eyes(height1=h, height2=h)
         flush_buffer()
         time.sleep(0.0001)
+
+    activity_started = time.ticks_ms()
     while True:
+        if mood_expired(activity_started):
+            archi.mood = arch.MOOD.DEFAULT
+            break
         for i in range(10):
             for w in range(36, 48, 2):
                 fb.fill(0)
                 render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
-                # render_eyes(height1=25, height2=25)
                 x_mouth = 125 - w // 2
                 fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
                 fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
@@ -741,7 +757,6 @@ def eating_mood():
             for w in range(48, 36, -2):
                 fb.fill(0)
                 render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
-                # render_eyes(height1=25, height2=25)
                 x_mouth = 125 - w // 2
                 fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
                 fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
@@ -750,12 +765,6 @@ def eating_mood():
                 flush_buffer()
                 time.sleep(0.02)
             i +=1
-
-        # REMOVE ME
-        time.sleep(3)
-        # REMOVE ME
-
-    # archi.mood = arch.MOOD.DEFAULT
 
 def waking_up_mood():
     print("waking up")
@@ -823,8 +832,8 @@ def main():
     fb.fill(0)
     flush_buffer()
     # boot()
-    # booting_eyes()
-    # greeting()
+    booting_eyes()
+    greeting()
     archi.mood = arch.MOOD.EATING
     while True:
         render_mood()
