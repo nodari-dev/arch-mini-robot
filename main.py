@@ -263,14 +263,6 @@ def levitate_default_single(timeout = 0.01):
         flush_buffer()
         time.sleep(timeout)
 
-def switch_mood():
-    new_mood = archi.mood
-    if new_mood == arch.MOOD.SUS:
-        sus_mood()
-
-    if new_mood == arch.MOOD.LOVING:
-        loving_mood()
-
 def default_mood():
     render_eyes()
     flush_buffer()
@@ -301,7 +293,6 @@ def default_mood():
 
         time.sleep(1)
     switch_mood()
-
 
 def render_hungry_mouth(drool_height = archi.drool.h):
     # Draw over drool
@@ -563,7 +554,6 @@ def tired_mood():
     # randomly SLOW look around
     # no levitaion
 
-    # archi.should_switch_mod(arch.MOOD.TIRED)
     render_eyes()
     flush_buffer()
     while archi.mood == arch.MOOD.TIRED:
@@ -582,7 +572,6 @@ def tired_mood():
             for r in range(archi.mouth.r, 23, 1):
                 if archi.should_switch_mod(arch.MOOD.TIRED):
                     break
-                # render_eyes(height1=5, height2=5)
                 render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
                 render_default_mouth(r=r)
                 flush_buffer()
@@ -594,7 +583,6 @@ def tired_mood():
                 if archi.should_switch_mod(arch.MOOD.TIRED):
                     break
                 render_eyes(height1=archi.left_eye.h, height2=archi.right_eye.h)
-                # render_eyes(height1=5, height2=5)
                 render_default_mouth(r=r)
                 flush_buffer()
                 time.sleep(0.01)
@@ -765,6 +753,14 @@ def eating_mood():
 def waking_up_mood():
     print("waking up")
 
+def switch_mood():
+    new_mood = archi.mood
+    if new_mood == arch.MOOD.SUS:
+        sus_mood()
+
+    if new_mood == arch.MOOD.LOVING:
+        loving_mood()
+
 last_press_time = 0
 def button_pressed(pin):
     global last_press_time
@@ -774,8 +770,14 @@ def button_pressed(pin):
     if time.ticks_diff(current_time, last_press_time) > 200:
         last_press_time = current_time
         # IGNORE IF SPECIFIC MODE IS ENABLED
-        if archi.mood == arch.MOOD.BOOTING_UP or archi.mood == arch.MOOD.EATING or archi.mood == arch.MOOD.WAKING_UP:
+        if (not archi.is_changing_mood and
+            archi.loving_compliment and 
+            archi.mood == arch.MOOD.BOOTING_UP or
+            archi.mood == arch.MOOD.EATING or
+            archi.mood == arch.MOOD.WAKING_UP):
             return
+        else:
+            archi.is_changing_mood = True
 
         archi.button_clicked += 1
 
@@ -785,9 +787,8 @@ def button_pressed(pin):
         if archi.button_clicked == 2 and archi.mood == arch.MOOD.SUS:
             archi.mood = arch.MOOD.LOVING
 
-        if archi.mode == arch.MOOD.LOVING:
+        if archi.mood == arch.MOOD.LOVING:
             archi.loving_compliment = True
-
         print("Button pressed times:", archi.button_clicked)
 
 button = Pin(19, Pin.IN, Pin.PULL_UP)
@@ -837,6 +838,7 @@ def render_mood():
 
 def main():
     while True:
+        archi.mood = arch.MOOD.LOVING
         render_mood()
     # TODO: Implement check of happy_birthday on each mode
 

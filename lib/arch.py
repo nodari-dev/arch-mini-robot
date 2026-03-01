@@ -44,6 +44,7 @@ class Archi:
     right_eye = Eye()
     mouth = Mouth()
     drool = Drool()
+    is_changing_mood: bool = False
     mood = MOOD.BOOTING_UP
     loving_compliment: bool = False
     last_look_action: str | None = None
