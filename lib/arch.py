@@ -139,6 +139,7 @@ class Archi:
         if random.randint(1, 5) == 1:
             self.tiredness = 100
 
-def time_for_mood_expired(mode_time):
-    now = time.ticks_ms()
-    return time.ticks_diff(now, mode_time) >= 30000
+    def time_for_mood_expired(mode_time, ms_passed = 3000):
+        now = time.ticks_ms()
+        return time.ticks_diff(now, mode_time) >= ms_passed
+
