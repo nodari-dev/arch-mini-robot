@@ -47,7 +47,11 @@ class Archi:
     drool = Drool()
     is_changing_mood: bool = False
     mood = MOOD.BOOTING_UP
+    # loving
+    last_compliment_index = 0
     loving_compliment: bool = False
+    # reactions
+    reaction_was_called: bool = False
     last_look_action: str | None = None
     last_reaction: function | None = None
     # button
@@ -63,27 +67,6 @@ class Archi:
 
     def should_switch_mod(self, mod):
         return self.mood != mod
-
-        # 1. happy
-        # 2. sad - based on happy
-        # 3. angry
-        # 4. loving
-        # 5. sus
-        # 6. sleeping
-        # 7. hungry
-        # 8. tired
-        # 9. default
-        
-        # combine multiple moods
-        # if not hungry anymore and still tired > show next emotion
-
-        
-        # SLEEPING 
-        #   1. specific time of a day
-        #   2. after food
-        #   3. can be woken up
-        #   4. count down the tiredness
-        #   5. if tiredness => 50 then angry face
 
     def change_tiredness(self, value, increase = True):
         if increase:
@@ -125,6 +108,10 @@ class Archi:
     def sleeping_cycle_completed(self):
         self.change_tiredness(5, increase=False)
 
+    def default_cycle_completed(self):
+        self.change_tiredness(5, increase=True)
+        # self.change_tiredness(2, increase=True)
+        # self.change_hunger(5, increase=True)
 
     def will_sleep_more(self):
         if self.tiredness > 0:
@@ -133,6 +120,8 @@ class Archi:
 
     def decide_on_mood(self):
         previous_mood = self.mood
+        if previous_mood == MOOD.LOVING:
+            return
         if self.tiredness == 100:
             print("Im sleeping")
             self.mood = MOOD.SLEEPING
@@ -150,9 +139,12 @@ class Archi:
             print("Im hugry")
             self.mood = MOOD.HUNGRY
             return
-        else:
+
+        if self.mood != MOOD.REACTION or not self.reaction_was_called:
             print("Im default")
             self.mood = MOOD.DEFAULT
+            return
+
         # if self.tiredness > 80:
         #     print("tiredness")
         # if self.anger > 50:
@@ -161,3 +153,8 @@ class Archi:
     def time_passed(self, mood_time, ms_passed = 3000):
         now = time.ticks_ms()
         return time.ticks_diff(now, mood_time) >= ms_passed
+
+    def show_stats(self):
+        print("Button pressed times:", self.button_clicked)
+        print("Tiredness:", self.tiredness)
+        print("Hunger:", self.hunger)
