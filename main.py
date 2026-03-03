@@ -286,7 +286,7 @@ def default_mood():
             levitate_default_single()
             rep += 1
 
-        arch.show_stats()
+        arch.debug_stats()
 
         look_around_reps = random.randrange(1, 2)
         for rep in range(look_around_reps):
@@ -346,6 +346,11 @@ def hungry_mood():
 
     # FINISH ME
 
+    # work around
+    # as rpi pico does not have internal clock
+    # to make a deep sleep at night, we will check if hunger is 100 for 15 minutes
+    # then go to deep sleep
+
     # if more then 5 minutes > randomly choose angry or sad mood
     # after eating > one 1 in 10 chanse -> fall asleep
     
@@ -359,6 +364,9 @@ def hungry_mood():
                 # 5 MINUTES PASSED
                 if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
                     start_time = time.ticks_ms()
+                    # trigger angry face for 20 seconds
+                    # if pressed - feed 
+                    # if not - come back hungry mood
                     # arch.default_cycle_completed()
                 render_hungry_mouth(drool_height=h)
                 flush_buffer()
@@ -678,7 +686,7 @@ def tired_mood():
         if arch.should_switch_mod(archlib.MOOD.TIRED):
             break
 
-        arch.show_stats() 
+        arch.debug_stats() 
 
         if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
             start_time = time.ticks_ms()
@@ -845,7 +853,7 @@ def should_show_compliment():
 
 def loving_mood():
     mood_start_time = time.ticks_ms()
-    while arch.mood == archlib.MOOD.LOVING and not arch.time_passed(mood_time=mood_start_time, ms_passed=15000):
+    while arch.mood == archlib.MOOD.LOVING and not arch.time_passed(mood_time=mood_start_time, ms_passed=constants.THIRTY_SECONDS_MS):
         for size in range(70, 80, 5):
             should_show_compliment()
             if arch.should_switch_mod(archlib.MOOD.LOVING):
@@ -925,10 +933,12 @@ def button_pressed(pin):
             return
 
         if arch.mood == archlib.MOOD.HUNGRY:
+            arch.prev_mood = arch.mood
             arch.mood = archlib.MOOD.EATING
             return
 
         if arch.mood == archlib.MOOD.SLEEPING:
+            arch.prev_mood = arch.mood
             arch.mood = archlib.MOOD.WAKING_UP
             return
         
@@ -938,7 +948,7 @@ def button_pressed(pin):
 
         arch.button_clicked += 1
         if (arch.button_clicked == arch.clicks_to_love):
-
+            arch.prev_mood = arch.mood
             arch.mood = archlib.MOOD.LOVING
             arch.clicks_to_love = random.randrange(2, 7)
             arch.change_tiredness(5)
@@ -952,13 +962,6 @@ def button_pressed(pin):
             arch.mood = archlib.MOOD.REACTION
             arch.reaction_was_called = True
             return
-
-        # if arch.mood != archlib.MOOD.LOVING:
-        #     print("debug mood", arch.mood)
-        #     if arch.mood != archlib.MOOD.REACTION:
-        #         arch.decide_on_mood()
-
-        arch.show_stats()
 
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)

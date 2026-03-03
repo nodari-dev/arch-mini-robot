@@ -11,6 +11,7 @@ GREEN = st7789.color565(251,104,105)
 DEFAULT_CYCLE_TIME_MS = 3500
 TWENTY_MINUTES_MS = 20 * 60 * 1000
 FIVE_MINUTES_MS = 5 * 60 * 1000
+THIRTY_SECONDS_MS = 30 * 1000
 
 FONT_WIDTH = 8
 FONT_HEIGHT = 16
@@ -40,18 +41,25 @@ DEFAULT_DROOL_H = 30
 DEFAULT_DROOL_X = 125
 DEFAULT_DROOL_Y = 175
 
-GREETINGS = [["Hi",  "cutie :)"], [ "Hi", "beautiful"], ["Welcome", "my queen"]]
+GREETINGS = [["Hi",  "cutie"], [ "Hi", "beautiful"], ["Welcome", "my queen"]]
 COMPLIMENTS = [
-        ["You look",  "beautiful", "today :)"],
-        ["You look",  "cute", "today"],
+        ["You look", "beautiful", "today :)"],
+        ["You look", "cute", "today"],
         ["You are", "so so", "gorgeous"],
-        ["Your smile", "brings", "happines"],
+        ["Your smile", "brings", "happiness"],
         ["You have", "beautiful", "eyes"],
         ["You are", "the best", ":)"],
         ["You are", "loved", ""],
         ["You are", "valued", ""],
         ["I'm", "proud", "of you"],
+        ["I'm", "with", "you"],
         ["You", "bring", "peace"],
         ["You", "feel", "like home"],
-        ["I love", "your", "smell"]
+        ["I love", "your", "eyes"],
+        ["I love", "your", "lips"],
+        ["I love", "your", "smile"],
+        ["Your touch", "makes day", "brighter"],
+        ["Your message", "brings", "happiness"],
+        ["Your", "presense", "is healing"],
+    
 ]
