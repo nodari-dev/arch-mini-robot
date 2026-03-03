@@ -10,10 +10,11 @@ class MOOD:
     TIRED = 4
     SAD = 5
     LOVING = 6
-    SUS = 7
+    REACTION = 7
     EATING = 8
     WAKING_UP = 9
-    BOOTING_UP = 9
+    BOOTING_UP = 10
+    BLINK_TEXT = 12
 
 class MOOD_FACTOR:
     HUNGER = 0
@@ -48,9 +49,11 @@ class Archi:
     mood = MOOD.BOOTING_UP
     loving_compliment: bool = False
     last_look_action: str | None = None
+    last_reaction: function | None = None
     # button
     last_button_state = 1
     button_clicked = 0
+    clicks_to_love = 2
     # physical
     hunger = 0
     tiredness = 0
@@ -61,7 +64,6 @@ class Archi:
     def should_switch_mod(self, mod):
         return self.mood != mod
 
-    def mood_system(self):
         # 1. happy
         # 2. sad - based on happy
         # 3. angry
@@ -82,25 +84,6 @@ class Archi:
         #   3. can be woken up
         #   4. count down the tiredness
         #   5. if tiredness => 50 then angry face
-
-        if self.hunger > 50:
-            print("hugry")
-        if self.tiredness > 50:
-            print("tiredness")
-        if self.anger > 50:
-            print("angry")
-        if self.annoyanse > 50:
-            print("annoyanse")
-        if self.happiness > 50:
-            print("annoyanse")
-        if self.happiness < 25:
-            print("sad")
-
-    def min20_passed(self):
-        self.hunger += 10
-        self.tiredness += 10
-        if self.hunger > 60:
-            self.happiness -= 5
 
     def change_tiredness(self, value, increase = True):
         if increase:
@@ -139,7 +122,42 @@ class Archi:
         if random.randint(1, 5) == 1:
             self.tiredness = 100
 
-    def time_for_mood_expired(mode_time, ms_passed = 3000):
-        now = time.ticks_ms()
-        return time.ticks_diff(now, mode_time) >= ms_passed
+    def sleeping_cycle_completed(self):
+        self.change_tiredness(5, increase=False)
 
+
+    def will_sleep_more(self):
+        if self.tiredness > 0:
+            self.mood = MOOD.SLEEPING
+            return 
+
+    def decide_on_mood(self):
+        previous_mood = self.mood
+        if self.tiredness == 100:
+            print("Im sleeping")
+            self.mood = MOOD.SLEEPING
+            return 
+
+        if self.tiredness > 35 and previous_mood == MOOD.WAKING_UP:
+            print("Im angry after waking up")
+            self.mood = MOOD.ANGRY
+            return 
+        if self.tiredness >= 75:
+            print("Im tired")
+            self.mood = MOOD.TIRED
+            return 
+        if self.hunger == 100:
+            print("Im hugry")
+            self.mood = MOOD.HUNGRY
+            return
+        else:
+            print("Im default")
+            self.mood = MOOD.DEFAULT
+        # if self.tiredness > 80:
+        #     print("tiredness")
+        # if self.anger > 50:
+        #     print("angry")
+
+    def time_passed(self, mood_time, ms_passed = 3000):
+        now = time.ticks_ms()
+        return time.ticks_diff(now, mood_time) >= ms_passed

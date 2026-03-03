@@ -77,3 +77,20 @@ def fill_polygon(fb, points, color):
             if i+1 < len(intersections):
                 fb.hline(intersections[i], y,
                          intersections[i+1] - intersections[i], color)
+
+def draw_cute_smile(fb, cx, cy, width, depth, thickness, color):
+    half = width // 2
+    steps = width
+
+    for i in range(steps):
+        # x position across the smile
+        x = cx - half + i
+
+        # normalized t (-1 to 1)
+        t = (i / half) - 1
+
+        # parabolic curve
+        y = cy + int(depth * (t * t - 1))
+
+        # draw vertical thickness
+        fb.fill_rect(x, y, 1, thickness, color)

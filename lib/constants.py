@@ -36,6 +36,7 @@ DEFAULT_DROOL_H = 30
 DEFAULT_DROOL_X = 125
 DEFAULT_DROOL_Y = 175
 
+GREETINGS = [["Hi",  "cutie :)"], [ "Hi", "beautiful"], ["Welcome", "my queen"]]
 COMPLIMENTS = [
         ["You look",  "beautiful", "today :)"],
         ["You look",  "cute", "today"],
@@ -50,3 +51,10 @@ COMPLIMENTS = [
         ["You", "feel", "like home"],
         ["I love", "your", "smell"]
 ]
+
+# WHOA
+# CLIP WITH ONE EYE
+# HAT
+# ONE CLICK -> CLIP WITH ONE EYE -> WHATS UP:w
+# ONE CLICK -> SMALL EYES
+
