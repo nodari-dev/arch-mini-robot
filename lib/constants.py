@@ -8,7 +8,9 @@ WHITE = st7789.color565(255, 255, 255)
 RED = st7789.color565(255, 0, 0)
 GREEN = st7789.color565(251,104,105)
 
-DEFAULT_CYCLE_TIME = 3500
+DEFAULT_CYCLE_TIME_MS = 3500
+TWENTY_MINUTES_MS = 20 * 60 * 1000
+FIVE_MINUTES_MS = 5 * 60 * 1000
 
 FONT_WIDTH = 8
 FONT_HEIGHT = 16
@@ -53,10 +55,3 @@ COMPLIMENTS = [
         ["You", "feel", "like home"],
         ["I love", "your", "smell"]
 ]
-
-# WHOA
-# CLIP WITH ONE EYE
-# HAT
-# ONE CLICK -> CLIP WITH ONE EYE -> WHATS UP:w
-# ONE CLICK -> SMALL EYES
-

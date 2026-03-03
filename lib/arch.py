@@ -16,13 +16,6 @@ class MOOD:
     BOOTING_UP = 10
     BLINK_TEXT = 12
 
-class MOOD_FACTOR:
-    HUNGER = 0
-    TIREDNRESS = 1
-    ANGER = 2
-    HAPPINESS = 3
-    LOVING = 4
-
 class Eye:
   w = constants.DEFAULT_EYE_W
   h = constants.DEFAULT_EYE_H
@@ -46,6 +39,7 @@ class Archi:
     mouth = Mouth()
     drool = Drool()
     is_changing_mood: bool = False
+    prev_mood: int | None = None
     mood = MOOD.BOOTING_UP
     # loving
     last_compliment_index = 0
@@ -64,6 +58,7 @@ class Archi:
     anger = 0
     annoyanse = 0
     happiness = 45
+    deep_sleep: bool = False
 
     def should_switch_mod(self, mod):
         return self.mood != mod
@@ -80,38 +75,12 @@ class Archi:
         else:
             self.hunger = max(0, min(self.hunger-value, 100)) 
 
-    def change_happiness(self, value, increase = True):
-        if increase:
-            self.happiness = max(0, min(self.happiness+value, 100))
-        else:
-            self.happiness = max(0, min(self.happiness-value, 100))
-
-    def change_anger(self, value, increase = True):
-        if increase:
-            self.anger = max(0, min(self.anger+value, 100))
-        else:
-            self.anger = max(0, min(self.anger-value, 100))
-
-    def change_annoy(self, value, increase = True):
-        if increase:
-            self.anger = max(0, min(self.anger+value, 100))
-        else:
-            self.anger = max(0, min(self.anger-value, 100))
-
-    def eating_completed(self):
-        self.hunger = 0
-        self.happiness += 40
-        # can fall asleep after meal
-        if random.randint(1, 5) == 1:
-            self.tiredness = 100
-
     def sleeping_cycle_completed(self):
         self.change_tiredness(5, increase=False)
 
     def default_cycle_completed(self):
-        self.change_tiredness(5, increase=True)
-        # self.change_tiredness(2, increase=True)
-        # self.change_hunger(5, increase=True)
+        self.change_tiredness(2, increase=True)
+        self.change_hunger(5, increase=True)
 
     def will_sleep_more(self):
         if self.tiredness > 0:
@@ -124,31 +93,31 @@ class Archi:
             return
         if self.tiredness == 100:
             print("Im sleeping")
+            self.prev_mood = previous_mood
             self.mood = MOOD.SLEEPING
             return 
 
         if self.tiredness > 35 and previous_mood == MOOD.WAKING_UP:
             print("Im angry after waking up")
+            self.prev_mood = previous_mood
             self.mood = MOOD.ANGRY
             return 
         if self.tiredness >= 75:
             print("Im tired")
+            self.prev_mood = previous_mood
             self.mood = MOOD.TIRED
             return 
         if self.hunger == 100:
             print("Im hugry")
+            self.prev_mood = previous_mood
             self.mood = MOOD.HUNGRY
             return
 
         if self.mood != MOOD.REACTION or not self.reaction_was_called:
             print("Im default")
+            self.prev_mood = previous_mood
             self.mood = MOOD.DEFAULT
             return
-
-        # if self.tiredness > 80:
-        #     print("tiredness")
-        # if self.anger > 50:
-        #     print("angry")
 
     def time_passed(self, mood_time, ms_passed = 3000):
         now = time.ticks_ms()
