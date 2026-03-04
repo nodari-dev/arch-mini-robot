@@ -53,14 +53,14 @@ def greeting():
 
 def boot():
     text_renderer.render_text_line_center(tft, "Arch mini", constants.WHITE)
-    time.sleep(2)
+    time.sleep(3)
     text_renderer.clear_two_whole_lines(tft)
     text_renderer.render_two_text_lines_center(tft, "Ecenur", "Edition", constants.WHITE)
-    time.sleep(2)
+    time.sleep(3)
     text_renderer.clear_two_whole_lines(tft)
     text_renderer.clear_whole_line(tft)
     text_renderer.render_two_text_lines_center(tft, "Made with love", "By N", constants.WHITE)
-    time.sleep(2)
+    time.sleep(4)
     text_renderer.clear_two_whole_lines(tft)
     text_renderer.render_text_line_center(tft, "Booting up", constants.WHITE)
     booting_text = [
@@ -79,8 +79,9 @@ def boot():
         booting_counter += 1
         time.sleep(1)
 
-    time.sleep(2.5)
+    time.sleep(3)
     text_renderer.clear_whole_line(tft)
+    time.sleep(3)
 
 arch = archlib.Archi()
 
@@ -185,57 +186,6 @@ def blink_default_eyes():
         time.sleep(0.0001)
 
     time.sleep(0.05)
-
-def waking_up_eyes():
-    render_eyes(height1=5, height2=5)
-    flush_buffer()
-    time.sleep(1)
-
-    # try to open eyes
-    for h in range(5, 20, 1):
-        render_eyes(height1=h, height2=h)
-        flush_buffer()
-        time.sleep(0.001)
-
-    for h in range(20, 5, -1):
-        render_eyes(height1=h, height2=h)
-        flush_buffer()
-        time.sleep(0.001)
-
-    time.sleep(1)
-
-    for h in range(5, 20, 1):
-        render_eyes(height1=h, height2=h)
-        flush_buffer()
-        time.sleep(0.001)
-    time.sleep(1)
-
-    for h in range(20, 5, -1):
-        render_eyes(height1=h, height2=h)
-        flush_buffer()
-        time.sleep(0.001)
-
-    time.sleep(2.5)
-
-    # Open eyes fully
-    for h in range(5, constants.DEFAULT_EYE_H, 3):
-        render_eyes(height1=h, height2=h)
-        flush_buffer()
-        time.sleep(0.001)
-
-    time.sleep(1)
-    blink_default_eyes()
-    look_around()
-    for h in range(constants.DEFAULT_EYE_H, 30, -5):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-    time.sleep(3)
-    for h in range(30, constants.DEFAULT_EYE_H, 5):
-        render_eyes(height1=h, height2=h)
-        time.sleep(0.0001)
-    time.sleep(1)
-    render_eyes()
-    flush_buffer()
 
 LEVITATION_STEP = 1
 def levitate_default_single(timeout = 0.01):
@@ -839,7 +789,7 @@ def pick_compliment():
     flush_buffer()
     compliment_index = arch.last_compliment_index
     while compliment_index == arch.last_compliment_index:
-        compliment_index = random.randint(0, len(constants.COMPLIMENTS))
+        compliment_index = random.randint(0, len(constants.COMPLIMENTS) - 1)
     arch.last_compliment_index = compliment_index
 
     lines = constants.COMPLIMENTS[compliment_index]
@@ -878,7 +828,7 @@ def loving_mood():
     render_mood()
 
 def eating_mood():
-    for h in range(arch.left_eye.h, 25, -1):
+    for h in range(arch.left_eye.h, 5, -1):
         render_eyes(height1=h, height2=h)
         flush_buffer()
         time.sleep(0.0001)
@@ -909,12 +859,64 @@ def eating_mood():
                 time.sleep(0.02)
             i +=1
 
-    arch.mood = archlib.MOOD.DEFAULT
+        for h in range(arch.left_eye.h, constants.DEFAULT_EYE_H, 2):
+            fb.fill(0)
+            render_eyes(height1=h, height2=h)
+            flush_buffer()
+            time.sleep(0.002)
+
     arch.hunger = 0
-    render_mood()
 
 def waking_up_mood():
-    waking_up_eyes()
+    render_eyes(height1=5, height2=5)
+    flush_buffer()
+    time.sleep(1)
+
+    # try to open eyes
+    for h in range(5, 20, 1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for h in range(20, 5, -1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.001)
+
+    time.sleep(1)
+
+    for h in range(5, 20, 1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.001)
+    time.sleep(1)
+
+    for h in range(20, 5, -1):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.001)
+
+    time.sleep(2.5)
+
+    # Open eyes fully
+    for h in range(5, constants.DEFAULT_EYE_H, 3):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.001)
+
+    time.sleep(1)
+    blink_default_eyes()
+    look_around()
+    for h in range(constants.DEFAULT_EYE_H, 30, -5):
+        render_eyes(height1=h, height2=h)
+        time.sleep(0.0001)
+    time.sleep(3)
+    for h in range(30, constants.DEFAULT_EYE_H, 5):
+        render_eyes(height1=h, height2=h)
+        time.sleep(0.0001)
+    time.sleep(1)
+    render_eyes()
+    flush_buffer()
 
 last_press_time = 0
 def button_pressed(pin):
@@ -966,13 +968,60 @@ def button_pressed(pin):
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)
 
+
+def booting_up_wake_up():
+    fb.fill(0)
+    flush_buffer()
+
+    # eyes on the bottom
+    for y in range(240, 195, -4):
+        render_eyes(y1=y, y2=y)
+        flush_buffer()
+        time.sleep(0.0001)
+    time.sleep(1)
+
+    for y in range(195, 245, 6):
+        render_eyes(y1=y, y2=y)
+        flush_buffer()
+        time.sleep(0.0001)
+    time.sleep(2)
+
+    # eyes on the top
+    for y in range(-constants.DEFAULT_EYE_Y -10, -25, 4):
+        render_eyes(y1=y, y2=y)
+        flush_buffer()
+        time.sleep(0.0001)
+
+    time.sleep(1)
+
+    for y in range(-25, -constants.DEFAULT_EYE_Y - 10, -6):
+        render_eyes(y1=y, y2=y)
+        flush_buffer()
+        time.sleep(0.0001)
+    time.sleep(1)
+
+    for h in range(0, constants.DEFAULT_EYE_H, 4):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.0001)
+    time.sleep(1)
+
+    blink_default_eyes()
+    blink_default_eyes()
+    time.sleep(1)
+
+    for h in range(constants.DEFAULT_EYE_H, constants.DEFAULT_EYE_H//2, -4):
+        render_eyes(height1=h, height2=h)
+        flush_buffer()
+        time.sleep(0.0001)
+    time.sleep(3)
+
 def booting_up_mood():
     fb.fill(0)
     flush_buffer()
     boot()
-    waking_up_eyes()
+    booting_up_wake_up()
     greeting()
-    arch.mood = archlib.MOOD.DEFAULT
     time.sleep(1)
 
 def render_mood():
@@ -1000,13 +1049,15 @@ def render_mood():
         eating_mood()
 
 def main():
+    init_flag = True
     test_flag = True
     while True:
-        arch.decide_on_mood()
         if test_flag:
             arch.hunger = 100
             test_flag = False
+        # arch.decide_on_mood(init=init_flag)
         arch.decide_on_mood()
+        init_flag = False
         render_mood()
 
 main()

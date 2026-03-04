@@ -14,7 +14,8 @@ class MOOD:
     EATING = 8
     WAKING_UP = 9
     BOOTING_UP = 10
-    BLINK_TEXT = 12
+    BLINK_TEXT = 11
+    BOOT_WAKE_UP = 12
 
 class Eye:
   w = constants.DEFAULT_EYE_W
@@ -87,8 +88,23 @@ class Archi:
             self.mood = MOOD.SLEEPING
             return 
 
-    def decide_on_mood(self):
+    def decide_on_mood(self, init = False):
+        if init:
+            self.mood = MOOD.BOOTING_UP
+            return
+
         previous_mood = self.mood
+
+        if previous_mood == MOOD.BOOTING_UP:
+            self.prev_mood = previous_mood
+            self.mood = MOOD.DEFAULT
+            return
+
+        if previous_mood == MOOD.EATING:
+            self.prev_mood = previous_mood
+            self.mood = MOOD.DEFAULT
+            return
+
         # loving mood will change by default
         if previous_mood == MOOD.LOVING:
             return
