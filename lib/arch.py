@@ -93,49 +93,62 @@ class Archi:
             self.mood = MOOD.BOOTING_UP
             return
 
-        previous_mood = self.mood
+        current_mood = self.mood
 
-        if previous_mood == MOOD.BOOTING_UP:
-            self.prev_mood = previous_mood
+        if current_mood == MOOD.BOOTING_UP:
+            self.prev_mood = current_mood
             self.mood = MOOD.DEFAULT
             return
 
-        if previous_mood == MOOD.EATING:
-            self.prev_mood = previous_mood
+        # if current_mood == MOOD.HUNGRY:
+        #     print("EEATING")
+        #     self.prev_mood = current_mood
+        #     self.mood = MOOD.EATING
+        #     return
+
+        if current_mood == MOOD.EATING:
+            self.prev_mood = current_mood
             self.mood = MOOD.DEFAULT
             return
+        
+        # if current_mood == MOOD.ANGRY:
+        #     print("ANGRY TEST")
+        #     # most probably will be hungry face
+        #     self.mood = self.prev_mood
+        #     self.prev_mood = current_mood
+        #     return
 
         # loving mood will change by default
-        if previous_mood == MOOD.LOVING:
+        if current_mood == MOOD.LOVING:
             return
 
         if self.tiredness == 100:
             print("Im sleeping")
-            self.prev_mood = previous_mood
+            self.prev_mood = current_mood
             self.mood = MOOD.SLEEPING
             return
 
-        if self.tiredness > 35 and previous_mood == MOOD.WAKING_UP:
+        if self.tiredness > 35 and current_mood == MOOD.WAKING_UP:
             print("Im angry after waking up")
-            self.prev_mood = previous_mood
+            self.prev_mood = current_mood
             self.mood = MOOD.ANGRY
             return 
 
         if self.tiredness >= 75:
             print("Tired")
-            self.prev_mood = previous_mood
+            self.prev_mood = current_mood
             self.mood = MOOD.TIRED
             return 
 
         if self.hunger == 100:
             print("Hugry")
-            self.prev_mood = previous_mood
+            self.prev_mood = current_mood
             self.mood = MOOD.HUNGRY
             return
 
         if self.mood != MOOD.REACTION or not self.reaction_was_called:
             print("Default")
-            self.prev_mood = previous_mood
+            self.prev_mood = current_mood
             self.mood = MOOD.DEFAULT
             return
 

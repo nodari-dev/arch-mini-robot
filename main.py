@@ -303,7 +303,8 @@ def hungry_mood():
 
     # if more then 5 minutes > randomly choose angry or sad mood
     # after eating > one 1 in 10 chanse -> fall asleep
-    
+
+    showed_emotion = False
     start_time = time.ticks_ms()
     while arch.mood == archlib.MOOD.HUNGRY:
         # longer drool
@@ -312,12 +313,16 @@ def hungry_mood():
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
                     break
                 # 5 MINUTES PASSED
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                    and not showed_emotion
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
                     start_time = time.ticks_ms()
-                    # trigger angry face for 20 seconds
-                    # if pressed - feed 
-                    # if not - come back hungry mood
-                    # arch.default_cycle_completed()
+                    if random.randint(0, 1):
+                        temporary_hungry_face(True)
+                    else: 
+                        temporary_hungry_face()
+                    showed_emotion = True
+                    break
                 render_hungry_mouth(drool_height=h)
                 flush_buffer()
                 time.sleep(0.1)
@@ -331,6 +336,16 @@ def hungry_mood():
             while drip_pos < constants.DISPLAY_H:
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
                     break
+                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                    and not showed_emotion
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
+                    start_time = time.ticks_ms()
+                    if random.randint(0, 1):
+                        temporary_hungry_face(True)
+                    else: 
+                        temporary_hungry_face()
+                    showed_emotion = True
+                    break
                 fb.fill_rect(arch.drool.x, drip_pos, arch.drool.w, 8, constants.BLACK)
                 fb.fill_rect(arch.drool.x, drip_pos+1, arch.drool.w, 8, constants.WHITE)
                 flush_buffer()
@@ -340,6 +355,16 @@ def hungry_mood():
             # shorter drool
             for h in range(arch.drool.h, arch.drool.h-15, -LEVITATION_STEP):
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
+                    break
+                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                    and not showed_emotion
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
+                    start_time = time.ticks_ms()
+                    if random.randint(0, 1):
+                        temporary_hungry_face(True)
+                    else: 
+                        temporary_hungry_face()
+                    showed_emotion = True
                     break
                 render_hungry_mouth(drool_height=h)
                 flush_buffer()
@@ -433,67 +458,49 @@ def render_sad_eyes(
     arch.right_eye.h = height2
     graphics.fill_polygon(fb, points_right, constants.WHITE)
 
-def angry_mood():
-    # 1. when annoyed
-    # 2. when didnt sleep well
+def temporary_hungry_face(angry_face = True):
     fb.fill(0)
     flush_buffer()
-
     # levitate
     mood_start_time = time.ticks_ms()
-    while arch.mood == archlib.MOOD.ANGRY and not arch.time_passed(mood_time=mood_start_time, ms_passed=5000):
+    while not arch.should_switch_mod(archlib.MOOD.HUNGRY) and not arch.time_passed(mood_time=mood_start_time, ms_passed=5000) :
         for y in range(arch.left_eye.y, arch.left_eye.y+15, LEVITATION_STEP):
-            render_angry_eyes(y1=y, y2=y)
+            if angry_face:
+                render_angry_eyes(y1=y, y2=y)
+            else:
+                render_sad_eyes(y1=y, y2=y)
             flush_buffer()
             time.sleep(0.01)
 
         for y in range(arch.left_eye.y, arch.left_eye.y-15, -LEVITATION_STEP):
-            render_angry_eyes(y1=y, y2=y)
+            if angry_face:
+                render_angry_eyes(y1=y, y2=y)
+            else:
+                render_sad_eyes(y1=y, y2=y)
             flush_buffer()
             time.sleep(0.01)
 
         for y in range(arch.left_eye.y, arch.left_eye.y+15, LEVITATION_STEP):
-            render_angry_eyes(y1=y, y2=y)
+            if angry_face:
+                render_angry_eyes(y1=y, y2=y)
+            else:
+                render_sad_eyes(y1=y, y2=y)
             flush_buffer()
             time.sleep(0.01)
 
         for y in range(arch.left_eye.y, arch.left_eye.y-15, -LEVITATION_STEP):
-            render_angry_eyes(y1=y, y2=y)
+            if angry_face:
+                render_angry_eyes(y1=y, y2=y)
+            else:
+                render_sad_eyes(y1=y, y2=y)
             flush_buffer()
             time.sleep(0.01)
 
-def sad_mood():
     fb.fill(0)
     flush_buffer()
-    # levitate
-    while arch.mood == archlib.MOOD.SAD:
-        for y in range(arch.left_eye.y, arch.left_eye.y+15, LEVITATION_STEP):
-            if arch.should_switch_mod(archlib.MOOD.SAD):
-                break
-            render_sad_eyes(y1=y, y2=y)
-            flush_buffer()
-            time.sleep(0.01)
-
-        for y in range(arch.left_eye.y, arch.left_eye.y-15, -LEVITATION_STEP):
-            if arch.should_switch_mod(archlib.MOOD.SAD):
-                break
-            render_sad_eyes(y1=y, y2=y)
-            flush_buffer()
-            time.sleep(0.01)
-
-        for y in range(arch.left_eye.y, arch.left_eye.y+15, LEVITATION_STEP):
-            if arch.should_switch_mod(archlib.MOOD.SAD):
-                break
-            render_sad_eyes(y1=y, y2=y)
-            flush_buffer()
-            time.sleep(0.01)
-
-        for y in range(arch.left_eye.y, arch.left_eye.y-15, -LEVITATION_STEP):
-            if arch.should_switch_mod(archlib.MOOD.SAD):
-                break
-            render_sad_eyes(y1=y, y2=y)
-            flush_buffer()
-            time.sleep(0.01)
+    render_eyes()
+    render_hungry_mouth(r=constants.DEFAULT_MOUTH_R)
+    flush_buffer()
 
 def sus_emote():
     for h in range(arch.left_eye.h, 30, -5):
@@ -1035,12 +1042,12 @@ def render_mood():
         sleeping_mood()
     elif arch.mood == archlib.MOOD.WAKING_UP:
         waking_up_mood()
-    elif arch.mood == archlib.MOOD.ANGRY:
-        angry_mood()
+    # elif arch.mood == archlib.MOOD.ANGRY:
+    #     angry_mood()
     elif arch.mood == archlib.MOOD.TIRED:
         tired_mood()
-    elif arch.mood == archlib.MOOD.SAD:
-        sad_mood()
+    # elif arch.mood == archlib.MOOD.SAD:
+    #     sad_mood()
     elif arch.mood == archlib.MOOD.LOVING:
         loving_mood()
     elif arch.mood == archlib.MOOD.REACTION:
@@ -1057,7 +1064,7 @@ def main():
             test_flag = False
         # arch.decide_on_mood(init=init_flag)
         arch.decide_on_mood()
-        init_flag = False
+        # init_flag = False
         render_mood()
 
 main()
