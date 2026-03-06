@@ -724,7 +724,7 @@ def tired_mood():
 
         arch.debug_stats() 
 
-        if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+        if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
             start_time = time.ticks_ms()
             arch.default_cycle_completed()
 
@@ -734,7 +734,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -748,7 +748,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
@@ -763,7 +763,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
@@ -778,7 +778,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -792,7 +792,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -806,7 +806,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -822,7 +822,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -834,7 +834,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -858,7 +858,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
+                if arch.time_passed(start_time, constants.TWO_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
