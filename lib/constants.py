@@ -60,7 +60,7 @@ COMPLIMENTS = [
         ["I love", "your", "smile"],
         ["I love", "your cheeks", "(all)"],
         ["Your touch", "makes day", "brighter"],
-        ["Your message", "brings", "happiness"],
+        ["Your messages", "make", "me happy"],
         ["Your", "presense", "is healing"],
     
 ]
