@@ -8,8 +8,8 @@ WHITE = st7789.color565(255, 255, 255)
 RED = st7789.color565(255, 0, 0)
 GREEN = st7789.color565(251,104,105)
 
-DEFAULT_CYCLE_TIME_MS = 500
 TWENTY_MINUTES_MS = 20 * 60 * 1000
+FIFTEEN_MINUTES_MS = 15 * 60 * 1000
 FIVE_MINUTES_MS = 5 * 60 * 1000
 THIRTY_SECONDS_MS = 30 * 1000
 
@@ -52,12 +52,12 @@ COMPLIMENTS = [
         ["You are", "loved", ""],
         ["You are", "valued", ""],
         ["I'm", "proud", "of you"],
-        ["I'm", "with", "you"],
         ["You", "bring", "peace"],
         ["You", "feel", "like home"],
         ["I love", "your", "eyes"],
         ["I love", "your", "lips"],
         ["I love", "your", "smile"],
+        ["I love", "your cheeks", "(all)"],
         ["Your touch", "makes day", "brighter"],
         ["Your message", "brings", "happiness"],
         ["Your", "presense", "is healing"],

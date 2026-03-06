@@ -95,28 +95,25 @@ class Archi:
 
         current_mood = self.mood
 
+        if self.deep_sleep:
+            self.prev_mood = current_mood
+            self.mood = MOOD.SLEEPING
+            return
+
+        if self.hunger == 100 and self.prev_mood == MOOD.SLEEPING:
+            self.prev_mood = current_mood
+            self.mood = MOOD.EATING
+            return
+
         if current_mood == MOOD.BOOTING_UP:
             self.prev_mood = current_mood
             self.mood = MOOD.DEFAULT
             return
 
-        # if current_mood == MOOD.HUNGRY:
-        #     print("EEATING")
-        #     self.prev_mood = current_mood
-        #     self.mood = MOOD.EATING
-        #     return
-
         if current_mood == MOOD.EATING:
             self.prev_mood = current_mood
             self.mood = MOOD.DEFAULT
             return
-        
-        # if current_mood == MOOD.ANGRY:
-        #     print("ANGRY TEST")
-        #     # most probably will be hungry face
-        #     self.mood = self.prev_mood
-        #     self.prev_mood = current_mood
-        #     return
 
         # loving mood will change by default
         if current_mood == MOOD.LOVING:
@@ -157,6 +154,7 @@ class Archi:
         return time.ticks_diff(now, mood_time) >= ms_passed
 
     def debug_stats(self):
+        print("Stats:", self.button_clicked)
         print("Button pressed times:", self.button_clicked)
         print("Tiredness:", self.tiredness)
         print("Hunger:", self.hunger)

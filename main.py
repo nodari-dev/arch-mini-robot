@@ -212,6 +212,51 @@ def levitate_default_single(timeout = 0.01):
         flush_buffer()
         time.sleep(timeout)
 
+def sus_look_left_and_right():
+    for x in range(0, 12, 2):
+        render_eyes(x1=arch.left_eye.x - x, x2=arch.right_eye.x - x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for h in range(arch.left_eye.h, 30, -5):
+        render_eyes(height1=h, height2=h, x1=arch.left_eye.x, x2=arch.right_eye.x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    time.sleep(1)
+
+    for h in range(30, constants.DEFAULT_EYE_H, 5):
+        render_eyes(height1=h, height2=h, x1=arch.left_eye.x, x2=arch.right_eye.x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for x in range(0, 12, 2):
+        render_eyes(x1=arch.left_eye.x + x, x2=arch.right_eye.x + x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for x in range(0, 12, 2):
+        render_eyes(x1=arch.left_eye.x + x, x2=arch.right_eye.x + x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for h in range(arch.left_eye.h, 30, -5):
+        render_eyes(height1=h, height2=h, x1=arch.left_eye.x, x2=arch.right_eye.x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    time.sleep(1)
+
+    for h in range(30, constants.DEFAULT_EYE_H, 5):
+        render_eyes(height1=h, height2=h, x1=arch.left_eye.x, x2=arch.right_eye.x)
+        flush_buffer()
+        time.sleep(0.001)
+
+    for x in range(0, 12, 2):
+        render_eyes(x1=arch.left_eye.x - x, x2=arch.right_eye.x - x)
+        flush_buffer()
+        time.sleep(0.001)
+
 def default_mood():
     render_eyes()
     flush_buffer()
@@ -221,7 +266,7 @@ def default_mood():
         arch.decide_on_mood()
         if arch.should_switch_mod(archlib.MOOD.DEFAULT):
             break
-        if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+        if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
             start_time = time.ticks_ms()
             arch.default_cycle_completed()
 
@@ -230,7 +275,7 @@ def default_mood():
             arch.decide_on_mood()
             if arch.should_switch_mod(archlib.MOOD.DEFAULT):
                 break
-            if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+            if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                 start_time = time.ticks_ms()
                 arch.default_cycle_completed()
             levitate_default_single()
@@ -244,7 +289,7 @@ def default_mood():
             arch.decide_on_mood()
             if arch.should_switch_mod(archlib.MOOD.DEFAULT):
                 break
-            if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+            if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                 start_time = time.ticks_ms()
                 arch.default_cycle_completed()
             if name == arch.last_look_action:
@@ -252,9 +297,25 @@ def default_mood():
                 continue
             arch.last_look_action = name
             look_to(dx, dy)
+            if random.randrange(1, 5) == 1:
+                for h in range(arch.left_eye.h, 30, -5):
+                    render_eyes(height1=h, height2=h, x1=arch.left_eye.x, y1=arch.left_eye.y, x2=arch.right_eye.x, y2=arch.right_eye.y)
+                    flush_buffer()
+                    time.sleep(0.001)
+
+                time.sleep(1)
+
+                for h in range(30, constants.DEFAULT_EYE_H, 5):
+                    render_eyes(height1=h, height2=h, x1=arch.left_eye.x, y1=arch.left_eye.y, x2=arch.right_eye.x, y2=arch.right_eye.y)
+                    flush_buffer()
+                    time.sleep(0.001)
+
             time.sleep(1)
             look_back_to_center()
             rep += 1
+
+        if random.randrange(1, 5) == 1:
+            sus_look_left_and_right()
 
         time.sleep(1)
     render_mood()
@@ -306,22 +367,26 @@ def hungry_mood():
 
     showed_emotion = False
     start_time = time.ticks_ms()
-    while arch.mood == archlib.MOOD.HUNGRY:
+    while arch.mood == archlib.MOOD.HUNGRY and not arch.deep_sleep:
         # longer drool
         if random.randrange(1, 3) == 1:
             for h in range(arch.drool.h, arch.drool.h+15, LEVITATION_STEP):
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
                     break
                 # 5 MINUTES PASSED
-                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                if ( arch.time_passed(start_time, constants.FIVE_MINUTES_MS)
                     and not showed_emotion
                     and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
                     start_time = time.ticks_ms()
-                    if random.randint(0, 1):
+                    if random.randrange(1, 2) == 1:
                         temporary_hungry_face(True)
                     else: 
                         temporary_hungry_face()
                     showed_emotion = True
+                    break
+                if (arch.time_passed(start_time, constants.FIFTEEN_MINUTES_MS)
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
+                    arch.deep_sleep = True
                     break
                 render_hungry_mouth(drool_height=h)
                 flush_buffer()
@@ -336,15 +401,19 @@ def hungry_mood():
             while drip_pos < constants.DISPLAY_H:
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
                     break
-                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                if ( arch.time_passed(start_time, constants.FIVE_MINUTES_MS)
                     and not showed_emotion
                     and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
                     start_time = time.ticks_ms()
-                    if random.randint(0, 1):
+                    if random.randrange(1, 2) == 1:
                         temporary_hungry_face(True)
                     else: 
                         temporary_hungry_face()
                     showed_emotion = True
+                    break
+                if (arch.time_passed(start_time, constants.FIFTEEN_MINUTES_MS)
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
+                    arch.deep_sleep = True
                     break
                 fb.fill_rect(arch.drool.x, drip_pos, arch.drool.w, 8, constants.BLACK)
                 fb.fill_rect(arch.drool.x, drip_pos+1, arch.drool.w, 8, constants.WHITE)
@@ -356,15 +425,19 @@ def hungry_mood():
             for h in range(arch.drool.h, arch.drool.h-15, -LEVITATION_STEP):
                 if arch.should_switch_mod(archlib.MOOD.HUNGRY):
                     break
-                if ( arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS)
+                if ( arch.time_passed(start_time, constants.FIVE_MINUTES_MS)
                     and not showed_emotion
                     and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
                     start_time = time.ticks_ms()
-                    if random.randint(0, 1):
+                    if random.randrange(1, 2) == 1:
                         temporary_hungry_face(True)
                     else: 
                         temporary_hungry_face()
                     showed_emotion = True
+                    break
+                if (arch.time_passed(start_time, constants.FIFTEEN_MINUTES_MS)
+                    and not arch.should_switch_mod(archlib.MOOD.HUNGRY)):
+                    arch.deep_sleep = True
                     break
                 render_hungry_mouth(drool_height=h)
                 flush_buffer()
@@ -376,7 +449,7 @@ def hungry_mood():
             blink_with_mouth()
         else:
             time.sleep(1)
-    render_mood()
+    # render_mood()
 
 def render_angry_eyes(
         # NOTE: -15 for height
@@ -547,7 +620,7 @@ def whoa():
         flush_buffer()
         time.sleep(0.0001)
     time.sleep(1)
-    
+
 def smile():
     for h in range(arch.left_eye.h, 50, -10):
         render_eyes(height1=h, height2=h)
@@ -558,10 +631,10 @@ def smile():
         render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
         graphics.draw_cute_smile(
             fb,
-            cx=120,
+            cx=123,
             cy=175,
             width=w,
-            depth=-15,
+            depth=-11,
             thickness=10,
             color=constants.WHITE)
         flush_buffer()
@@ -598,11 +671,17 @@ def sleeping_mood():
         time.sleep(0.0001)
 
     start_time = time.ticks_ms()
-    while arch.mood == archlib.MOOD.SLEEPING and arch.tiredness != 0:
-        for r in range(arch.mouth.r, 23, 1):
+    while (
+            (arch.mood == archlib.MOOD.SLEEPING and arch.tiredness != 0)
+            or (arch.mood == archlib.MOOD.SLEEPING and arch.deep_sleep)
+        ):
+
+        # arch.deep_sleep logic here
+
+        for r in range(arch.mouth.r, 18, 1):
             if arch.should_switch_mod(archlib.MOOD.SLEEPING):
                 break
-            if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+            if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                 start_time = time.ticks_ms()
                 arch.sleeping_cycle_completed()
             render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
@@ -645,7 +724,7 @@ def tired_mood():
 
         arch.debug_stats() 
 
-        if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+        if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
             start_time = time.ticks_ms()
             arch.default_cycle_completed()
 
@@ -655,7 +734,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -669,7 +748,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
@@ -684,7 +763,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
@@ -699,7 +778,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -713,7 +792,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -727,7 +806,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(height1=h, height2=h)
@@ -743,7 +822,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -755,7 +834,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -767,7 +846,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -779,7 +858,7 @@ def tired_mood():
                 if arch.should_switch_mod(archlib.MOOD.TIRED):
                     break
 
-                if arch.time_passed(start_time, constants.DEFAULT_CYCLE_TIME_MS):
+                if arch.time_passed(start_time, constants.FIVE_MINUTES_MS):
                     start_time = time.ticks_ms()
                     arch.default_cycle_completed()
                 render_eyes(y1=y, y2=y)
@@ -805,7 +884,7 @@ def pick_compliment():
 def should_show_compliment():
     if (arch.loving_compliment):
         pick_compliment()
-        time.sleep(2)
+        time.sleep(3)
         arch.loving_compliment = False
 
 def loving_mood():
@@ -847,9 +926,9 @@ def eating_mood():
                 fb.fill(0)
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
                 x_mouth = 125 - w // 2
-                fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
-                fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
-                fb.fill_rect(x_mouth+w+5, 160, 3, 20, constants.WHITE)
+                fb.fill_rect(x_mouth-8, 160, 3, 17, constants.WHITE)
+                fb.fill_rect(x_mouth, 165, w, 5, constants.WHITE)
+                fb.fill_rect(x_mouth+w+5, 160, 3, 17, constants.WHITE)
 
                 flush_buffer()
                 time.sleep(0.02)
@@ -858,9 +937,9 @@ def eating_mood():
                 fb.fill(0)
                 render_eyes(height1=arch.left_eye.h, height2=arch.right_eye.h)
                 x_mouth = 125 - w // 2
-                fb.fill_rect(x_mouth-8, 160, 3, 20, constants.WHITE)
-                fb.fill_rect(x_mouth, 165, w, 8, constants.WHITE)
-                fb.fill_rect(x_mouth+w+5, 160, 3, 20, constants.WHITE)
+                fb.fill_rect(x_mouth-8, 160, 3, 17, constants.WHITE)
+                fb.fill_rect(x_mouth, 165, w, 5, constants.WHITE)
+                fb.fill_rect(x_mouth+w+5, 160, 3, 17, constants.WHITE)
 
                 flush_buffer()
                 time.sleep(0.02)
@@ -872,6 +951,8 @@ def eating_mood():
             flush_buffer()
             time.sleep(0.002)
 
+    smile()
+    time.sleep(1.5)
     arch.hunger = 0
 
 def waking_up_mood():
@@ -921,7 +1002,6 @@ def waking_up_mood():
     for h in range(30, constants.DEFAULT_EYE_H, 5):
         render_eyes(height1=h, height2=h)
         time.sleep(0.0001)
-    time.sleep(1)
     render_eyes()
     flush_buffer()
 
@@ -944,6 +1024,12 @@ def button_pressed(pin):
         if arch.mood == archlib.MOOD.HUNGRY:
             arch.prev_mood = arch.mood
             arch.mood = archlib.MOOD.EATING
+            return
+
+        if arch.mood == archlib.MOOD.SLEEPING and arch.deep_sleep:
+            arch.prev_mood = arch.mood
+            arch.mood = archlib.MOOD.EATING
+            arch.deep_sleep = False
             return
 
         if arch.mood == archlib.MOOD.SLEEPING:
@@ -974,7 +1060,6 @@ def button_pressed(pin):
 
 button = Pin(19, Pin.IN, Pin.PULL_UP)
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed)
-
 
 def booting_up_wake_up():
     fb.fill(0)
@@ -1057,14 +1142,13 @@ def render_mood():
 
 def main():
     init_flag = True
-    test_flag = True
+    # test_flag = True
     while True:
-        if test_flag:
-            arch.hunger = 100
-            test_flag = False
-        # arch.decide_on_mood(init=init_flag)
-        arch.decide_on_mood()
-        # init_flag = False
+        # if test_flag:
+        #     arch.hunger = 100
+        #     # arch.tiredness = 75
+        #     test_flag = False
+        arch.decide_on_mood(init=init_flag)
+        init_flag = False
         render_mood()
-
 main()
