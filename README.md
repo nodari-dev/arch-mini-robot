@@ -42,5 +42,5 @@ Action button:
 ```
 
 ## Project history
-![History](./history.png)
+![History of a project](./history.png)
 
