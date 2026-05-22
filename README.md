@@ -1,6 +1,6 @@
 # Arch Mini
 
-Cute robot project made completelly from scratch using python for embedded development, creating custom CAD model for 3d printing.
+Cute robot project made completelly from scratch with love to engineering and programming, using python for embedded development, creating custom CAD model for 3d printing.
 
 ![Arch mini](./main.png)
 
