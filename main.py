@@ -43,46 +43,6 @@ fb = framebuf.FrameBuffer(
 def flush_buffer():
     tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
 
-def greeting():
-    fb.fill(0)
-    tft.blit_buffer(buffer, 0, 0, constants.DISPLAY_W, constants.DISPLAY_H)
-    message = random.choice(constants.GREETINGS)
-    text_renderer.render_two_text_lines_center(tft, text1=message[0], text2=message[1], color=constants.WHITE)
-    time.sleep(3)
-    text_renderer.clear_two_whole_lines(tft)
-
-def boot():
-    text_renderer.render_text_line_center(tft, "Arch mini", constants.WHITE)
-    time.sleep(3)
-    text_renderer.clear_two_whole_lines(tft)
-    text_renderer.render_two_text_lines_center(tft, "Ecenur", "Edition", constants.WHITE)
-    time.sleep(3)
-    text_renderer.clear_two_whole_lines(tft)
-    text_renderer.clear_whole_line(tft)
-    text_renderer.render_two_text_lines_center(tft, "Made with love", "By N", constants.WHITE)
-    time.sleep(4)
-    text_renderer.clear_two_whole_lines(tft)
-    text_renderer.render_text_line_center(tft, "Booting up", constants.WHITE)
-    booting_text = [
-        "Booting up.",
-        "Booting up..",
-        "Booting up...",
-    ]
-
-    booting_counter = 0
-    while booting_counter <= 5:
-        index = booting_counter%len(booting_text)
-        if(index == 0):
-            text_renderer.clear_whole_line(tft)
-        text = booting_text[index]
-        text_renderer.render_text_line_center(tft, text, constants.WHITE)
-        booting_counter += 1
-        time.sleep(1)
-
-    time.sleep(3)
-    text_renderer.clear_whole_line(tft)
-    time.sleep(3)
-
 arch = archlib.Archi()
 
 def render_eyes(
@@ -870,28 +830,11 @@ def tired_mood():
 
     render_mood()
 
-def pick_compliment():
-    fb.fill(0)
-    flush_buffer()
-    compliment_index = arch.last_compliment_index
-    while compliment_index == arch.last_compliment_index:
-        compliment_index = random.randint(0, len(constants.COMPLIMENTS) - 1)
-    arch.last_compliment_index = compliment_index
-
-    lines = constants.COMPLIMENTS[compliment_index]
-    text_renderer.render_three_text_lines_center(tft, lines[0], lines[1], lines[2], constants.WHITE)
-
-def should_show_compliment():
-    if (arch.loving_compliment):
-        pick_compliment()
-        time.sleep(3)
-        arch.loving_compliment = False
 
 def loving_mood():
     mood_start_time = time.ticks_ms()
     while arch.mood == archlib.MOOD.LOVING and not arch.time_passed(mood_time=mood_start_time, ms_passed=constants.THIRTY_SECONDS_MS):
         for size in range(70, 80, 5):
-            should_show_compliment()
             if arch.should_switch_mod(archlib.MOOD.LOVING):
                 break
 
@@ -901,7 +844,6 @@ def loving_mood():
             time.sleep(0.005)
 
         for size in range(80, 70, -5):
-            should_show_compliment()
             if arch.should_switch_mod(archlib.MOOD.LOVING):
                 break
 
@@ -1111,9 +1053,7 @@ def booting_up_wake_up():
 def booting_up_mood():
     fb.fill(0)
     flush_buffer()
-    boot()
     booting_up_wake_up()
-    greeting()
     time.sleep(1)
 
 def render_mood():

@@ -41,26 +41,3 @@ DEFAULT_DROOL_W = 6
 DEFAULT_DROOL_H = 30
 DEFAULT_DROOL_X = 125
 DEFAULT_DROOL_Y = 175
-
-GREETINGS = [["Hi",  "cutie"], [ "Hi", "beautiful"], ["Welcome", "my queen"]]
-COMPLIMENTS = [
-        ["You look", "beautiful", "today :)"],
-        ["You look", "cute", "today"],
-        ["You are", "so so", "gorgeous"],
-        ["Your smile", "brings", "happiness"],
-        ["You have", "beautiful", "eyes"],
-        ["You are", "the best", ":)"],
-        ["You are", "loved", ""],
-        ["You are", "valued", ""],
-        ["I'm", "proud", "of you"],
-        ["You", "bring", "peace"],
-        ["You", "feel", "like home"],
-        ["I love", "your", "eyes"],
-        ["I love", "your", "lips"],
-        ["I love", "your", "smile"],
-        ["I love", "your cheeks", "(all)"],
-        ["Your touch", "makes day", "brighter"],
-        ["Your messages", "make", "me happy"],
-        ["Your", "presense", "is healing"],
-    
-]
